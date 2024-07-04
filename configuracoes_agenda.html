@@ -1,0 +1,1058 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" type="imagem/png" href="https://i.ibb.co/Cwbt6V2/LOGO-2.png" />
+    <meta charset="utf-8" />
+    <title>Softenter</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
+    <style>
+        #app {
+            background-color: lightblue;
+        }
+        .fieldset-border {
+            border: 2px groove #ddd !important;
+            border-radius: 20px;
+            padding: 0 1.4em 1.4em 1.4em !important;
+            margin: 0 0 1.5em 0 !important;
+            height: 220px;
+            -webkit-box-shadow: 0px 0px 0px 0px #000;
+            box-shadow: 0px 0px 0px 0px #000;
+        }
+
+            .fieldset-border .legend-border {
+                font-size: 1.2em !important;
+                text-align: left !important;
+                width: auto;
+                padding: 0 10px;
+                border-bottom: none;
+            }
+        #comp_img_logo {
+            border-radius: 50%;
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/v-mask/dist/v-mask.min.js"></script>
+    <script src="compressjs.js"></script>
+
+    <div id="app">
+        <v-app id="inspire">
+
+            <v-snackbar timeout="2000"
+                        centered
+                        elevation="24"
+                        vertical
+                        v-model="snackbar"
+                        :color="cor_aviso">
+                <v-icon left>{{ icon }}</v-icon>
+
+                {{ text_aviso }}
+
+            </v-snackbar>
+
+            <v-dialog persistent width="200" v-model="carregando">
+                <v-card color="primary"
+                        dark>
+                    <v-card-text>
+                        Carregando... Aguarde !
+                        <v-progress-linear indeterminate
+                                           color="white"
+                                           class="mb-0">
+                        </v-progress-linear>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
+
+            <div>
+                <v-toolbar dark
+                           prominent
+                           height=110
+                           src="https://i.ibb.co/kg2wfdH/config.jpg">
+
+                    <template v-slot:img="{ props }">
+                        <v-img v-bind="props"
+                               gradient="to right, #1672C4, #1672C4CC, #1672C4CC, #3141D6CC, #3141D6CC"></v-img>
+                    </template>
+
+                    <v-toolbar-title>{{nome_empresa}}</v-toolbar-title>
+
+
+                    <template v-slot:extension>
+                        <v-tabs align-with-title>
+                            <v-btn color="#FFFFFF" text small onclick="window.location.href ='https://softenter.com.br/vendas.html'"> <v-icon dark left>mdi-cash-register</v-icon> Vendas </v-btn>
+
+                            <v-btn color="#FFFFFF" text small onclick="window.location.href ='https://softenter.com.br/produtos.html'"> <v-icon dark left>mdi-food-variant</v-icon> Produtos </v-btn>
+
+                            <v-btn color="#FFFFFF" text small onclick="window.location.href ='https://softenter.com.br/financeiro.html'"> <v-icon dark left>mdi-currency-usd</v-icon> Financeiro </v-btn>
+
+                            <v-menu open-on-hover offset-y>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn color="#FFFFFF"
+                                           text
+                                           small
+                                           v-bind="attrs"
+                                           v-on="on">
+                                        mais
+                                        <v-icon right>
+                                            mdi-menu-down
+                                        </v-icon>
+                                    </v-btn>
+                                </template>
+                                <v-card class="mx-auto"
+                                        max-width="190"
+                                        tile>
+                                    <v-list-item>
+                                        <v-list-item-content>
+                                            <v-btn text small onclick="window.location.href ='https://softenter.com.br/clientes.html'"> <v-icon dark left>mdi-account-multiple</v-icon> Clientes &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </v-btn>
+
+                                            <v-btn :disabled="disabled_sem_perm" text small onclick="window.location.href ='https://softenter.com.br/funcionarios.html'"> <v-icon dark left>mdi-account-group</v-icon> Funcionários &nbsp; </v-btn>
+
+                                            <v-btn :disabled="disabled_sem_perm" text small onclick="window.location.href ='https://softenter.com.br/configuracoes.html'"> <v-icon dark left>mdi-cogs</v-icon> Configurações </v-btn>
+                                        </v-list-item-content>
+
+                                </v-card>
+                            </v-menu>
+                        </v-tabs>
+                    </template>
+
+                </v-toolbar>
+            </div>
+
+            <v-card elevation="0">
+                <v-toolbar class="mb-2"
+                           color="#1E88E5"
+                           dark
+                           flat>
+                    <v-toolbar-title> <v-icon dark left>mdi-cogs</v-icon> Configurações</v-toolbar-title>
+                </v-toolbar>
+
+                <br>
+                <!--  <v-row dense justify="center">
+                     <v-col cols="8" sm="3">
+        <v-checkbox v-model="check_leitor"
+                    label="Utilizar leitor de código de barras"></v-checkbox>
+
+        <v-checkbox v-model="check_control_est"
+                    label="Controlar estoque"></v-checkbox>
+    </v-col>
+
+                    <v-col cols="11" sm="4">
+
+                        <fieldset class="fieldset-border">
+                            <legend class="legend-border">Redes sociais</legend>
+                            <br>
+                            <v-row dense justify="center">
+                                <v-col cols="12" sm="12">
+                                    <v-text-field dense prepend-inner-icon="mdi-facebook" v-model="facebook" label="Facebook" outlined></v-text-field>
+                                </v-col>
+                                <v-col cols="12" sm="12">
+                                    <v-text-field dense prepend-inner-icon="mdi-instagram" v-model="instagram" label="Instagram" outlined></v-text-field>
+                                </v-col>
+                            </v-row>
+                        </fieldset>
+
+                    </v-col>
+
+
+
+                </v-row>
+                     -->
+
+                <v-row dense justify="center">
+                    <v-col cols="11" sm="4">
+                        <fieldset class="fieldset-border">
+                            <legend class="legend-border">Logotipo da empresa</legend>
+                            <div class="card col-sm-12 col-xs-12 col-lg-10 col-md-10 push-lg-1 push-md-1 comp_img_container_logo">
+                                <div class="img-con_logo" title="Imagem"><img src="https://i.ibb.co/n1g2HRY/addimagem.jpg" alt="" id="comp_img_logo" class="img-fluid" width="120" height="120"></div>
+                                <div class="btn-group_logo" id="controls_logo">
+                                    <label class="btn btn-primary" title="select an image (jpeg, png)">
+                                        <span id="comp_file_selector_logo"><span class="fa fa-image"></span></span>
+                                        <input type="file" name="file" id="input_cmprss_logo" onchange="encode_logo();">
+                                    </label>
+                                    <a href="" download="file" id="comp_download_logo" class="btn btn-primary"></a>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </v-col>
+
+                    <v-col cols="11" sm="4">
+                        <fieldset class="fieldset-border">
+                            <legend class="legend-border">Impressão de recibos</legend>
+                            <v-row dense justify="center">
+                                <v-col cols="12" sm="12">
+                                    <v-checkbox v-model="check_termica"
+                                                @click="form_imp_termica()"
+                                                label="Impressora termica(58mm)"></v-checkbox>
+                                </v-col>
+                                <v-col cols="12" sm="12">
+                                    <v-checkbox v-model="check_a4"
+                                                @click="form_imp_a4()"
+                                                label="Impressora comum(A4)"></v-checkbox>
+                                </v-col>
+                            </v-row>
+                        </fieldset>
+                    </v-col>
+                </v-row>
+                <v-row dense justify="center">
+                    <v-col cols="11" sm="4">
+                        <v-text-field v-model="nome_empresa" label="Nome da Empresa" counter maxlength="29" outlined></v-text-field>
+                    </v-col>
+                    <v-col cols="11" sm="4">
+                        <v-text-field v-model="endereco" label="Endereço" counter maxlength="32" outlined></v-text-field>
+                    </v-col>
+                </v-row>
+                <v-row dense justify="center">
+                    <v-col cols="5" sm="2">
+                        <v-text-field v-model="telefone" label="Celular" v-mask="'(##)#####-####'" outlined></v-text-field>
+                    </v-col>
+                    <v-col cols="6" sm="3">
+                        <v-text-field v-model="cnpj" label="CNPJ" outlined></v-text-field>
+                    </v-col>
+                    <v-col cols="11" sm="3">
+                        <v-text-field v-model="nome_link" label="Link do seu site" readonly outlined></v-text-field>
+                    </v-col>
+                </v-row>
+
+                <v-row dense justify="center">
+                    <v-col cols="1" sm="5">
+                        <br><p><b></b></p>
+                    </v-col>
+                    <v-col cols="11" sm="3">
+                        <br><p><b>{{ licenca }}</b></p>
+                    </v-col>
+                </v-row>
+
+
+                <v-row justify="center">
+                    <v-col cols="11"
+                           sm="6">
+
+                        <v-data-table :headers="headers_cad_horas"
+                                      :items="cad_horas_Itens"
+                                      class="elevation-1"
+                                      mobile-breakpoint="0"
+                                      hide-default-footer>
+                            <template v-slot:top>
+                                <v-toolbar flat>
+                                    <v-toolbar-title>Cadastro de horários</v-toolbar-title>
+                                    <v-divider class="mx-4"
+                                               inset
+                                               vertical></v-divider>
+                                    <v-spacer></v-spacer>
+                                    <v-dialog v-model="dialog_cad_horas"
+                                              max-width="500px">
+                                        <v-card>
+
+                                            <v-toolbar flat
+                                                       color="primary"
+                                                       dark>
+                                                <v-toolbar-title>({{editedItem_cad_horas.dia_semana}}) - horários</v-toolbar-title>
+
+                                                <v-spacer></v-spacer>
+                                                <v-btn class="mb-2"
+                                                       icon
+                                                       x-large
+                                                       @click="dialog_add_hr = true">
+                                                    <v-icon>mdi-plus-circle</v-icon>
+                                                </v-btn>
+                                            </v-toolbar>
+
+                                            <v-card-text>
+                                                <v-container>
+                                                    <v-row no-gutters>
+                                                        <v-col cols="12"
+                                                               sm="12">
+                                                            <v-sheet>
+
+                                                                <div class="pa-4">
+                                                                    <v-chip-group active-class="primary--text"
+                                                                                  column>
+                                                                        <!--segunda-->
+                                                                        <template v-if="editedItem_cad_horas.dia_semana == 'Segunda'">
+                                                                            <template v-if="horarios_segunda.length < 1">
+                                                                                <v-row justify="center">
+                                                                                    <v-col cols="6"
+                                                                                           sm="6">
+                                                                                        <h4>Nenhum horário adicionado</h4>
+                                                                                    </v-col>
+                                                                                </v-row>
+                                                                            </template>
+                                                                            <v-chip v-for="horario_segunda in horarios_segunda"
+                                                                                    :key="horario_segunda"
+                                                                                    close
+                                                                                    @click:close="remove_horario(horario_segunda)">
+                                                                                {{ horario_segunda }}
+
+                                                                            </v-chip>
+                                                                        </template>
+
+                                                                        <!--terça-->
+                                                                        <template v-if="editedItem_cad_horas.dia_semana == 'Terça'">
+                                                                            <template v-if="horarios_terca.length < 1">
+                                                                                <v-row justify="center">
+                                                                                    <v-col cols="6"
+                                                                                           sm="6">
+                                                                                        <h4>Nenhum horário adicionado</h4>
+                                                                                    </v-col>
+                                                                                </v-row>
+                                                                            </template>
+                                                                            <v-chip v-for="horario_terca in horarios_terca"
+                                                                                    :key="horario_terca"
+                                                                                    close
+                                                                                    @click:close="remove_horario(horario_terca)">
+                                                                                {{ horario_terca }}
+
+                                                                            </v-chip>
+                                                                        </template>
+
+                                                                        <!--quarta-->
+                                                                        <template v-if="editedItem_cad_horas.dia_semana == 'Quarta'">
+                                                                            <template v-if="horarios_quarta.length < 1">
+                                                                                <v-row justify="center">
+                                                                                    <v-col cols="6"
+                                                                                           sm="6">
+                                                                                        <h4>Nenhum horário adicionado</h4>
+                                                                                    </v-col>
+                                                                                </v-row>
+                                                                            </template>
+                                                                            <v-chip v-for="horario_quarta in horarios_quarta"
+                                                                                    :key="horario_quarta"
+                                                                                    close
+                                                                                    @click:close="remove_horario(horario_quarta)">
+                                                                                {{ horario_quarta }}
+
+                                                                            </v-chip>
+                                                                        </template>
+
+                                                                        <!--quinta-->
+                                                                        <template v-if="editedItem_cad_horas.dia_semana == 'Quinta'">
+                                                                            <template v-if="horarios_quinta.length < 1">
+                                                                                <v-row justify="center">
+                                                                                    <v-col cols="6"
+                                                                                           sm="6">
+                                                                                        <h4>Nenhum horário adicionado</h4>
+                                                                                    </v-col>
+                                                                                </v-row>
+                                                                            </template>
+                                                                            <v-chip v-for="horario_quinta in horarios_quinta"
+                                                                                    :key="horario_quinta"
+                                                                                    close
+                                                                                    @click:close="remove_horario(horario_quinta)">
+                                                                                {{ horario_quinta }}
+
+                                                                            </v-chip>
+                                                                        </template>
+
+                                                                        <!--sexta-->
+                                                                        <template v-if="editedItem_cad_horas.dia_semana == 'Sexta'">
+                                                                            <template v-if="horarios_sexta.length < 1">
+                                                                                <v-row justify="center">
+                                                                                    <v-col cols="6"
+                                                                                           sm="6">
+                                                                                        <h4>Nenhum horário adicionado</h4>
+                                                                                    </v-col>
+                                                                                </v-row>
+                                                                            </template>
+                                                                            <v-chip v-for="horario_sexta in horarios_sexta"
+                                                                                    :key="horario_sexta"
+                                                                                    close
+                                                                                    @click:close="remove_horario(horario_sexta)">
+                                                                                {{ horario_sexta }}
+
+                                                                            </v-chip>
+                                                                        </template>
+
+                                                                        <!--sabado-->
+                                                                        <template v-if="editedItem_cad_horas.dia_semana == 'Sábado'">
+                                                                            <template v-if="horarios_sabado.length < 1">
+                                                                                <v-row justify="center">
+                                                                                    <v-col cols="6"
+                                                                                           sm="6">
+                                                                                        <h4>Nenhum horário adicionado</h4>
+                                                                                    </v-col>
+                                                                                </v-row>
+                                                                            </template>
+                                                                            <v-chip v-for="horario_sabado in horarios_sabado"
+                                                                                    :key="horario_sabado"
+                                                                                    close
+                                                                                    @click:close="remove_horario(horario_sabado)">
+                                                                                {{ horario_sabado }}
+
+                                                                            </v-chip>
+                                                                        </template>
+
+                                                                        <!--domingo-->
+                                                                        <template v-if="editedItem_cad_horas.dia_semana == 'Domingo'">
+                                                                            <template v-if="horarios_domingo.length < 1">
+                                                                                <v-row justify="center">
+                                                                                    <v-col cols="6"
+                                                                                           sm="6">
+                                                                                        <h4>Nenhum horário adicionado</h4>
+                                                                                    </v-col>
+                                                                                </v-row>
+                                                                            </template>
+                                                                            <v-chip v-for="horario_domingo in horarios_domingo"
+                                                                                    :key="horario_domingo"
+                                                                                    close
+                                                                                    @click:close="remove_horario(horario_domingo)">
+                                                                                {{ horario_domingo }}
+
+                                                                            </v-chip>
+                                                                        </template>
+
+                                                                        <!--feriado
+                                                            <template v-if="editedItem_cad_horas.dia_semana == 'Feriado'">
+                                                                <template v-if="horarios_feriado.length < 1">
+                                                                    <v-row justify="center">
+                                                                        <v-col cols="6"
+                                                                               sm="6">
+                                                                            <h4>Nenhum horário adicionado</h4>
+                                                                        </v-col>
+                                                                    </v-row>
+                                                                </template>
+                                                                <v-chip v-for="horario_feriado in horarios_feriado"
+                                                                        :key="horario_feriado"
+                                                                        close
+                                                                        @click:close="remove_horario(horario_feriado)">
+                                                                    {{ horario_feriado }}
+
+                                                                </v-chip>
+                                                            </template>-->
+                                                                    </v-chip-group>
+                                                                </div>
+                                                            </v-sheet>
+
+                                                            <div class="text-center">
+                                                                <v-dialog v-model="dialog_add_hr"
+                                                                          width="300">
+
+                                                                    <v-card>
+                                                                        <v-card-title class="text-h5 grey lighten-2">
+                                                                            Adicionar Horário
+                                                                        </v-card-title>
+
+                                                                        <v-row dense justify="center" no-gutters>
+                                                                            <v-col cols="5"
+                                                                                   sm="5">
+                                                                                <br>
+
+                                                                                <v-text-field v-model="add_hr"
+                                                                                              :error="exib_erro_add_hr"
+                                                                                              label="Horário"
+                                                                                              outlined
+                                                                                              autofocus
+                                                                                              type="time"></v-text-field>
+                                                                            </v-col>
+
+                                                                        </v-row>
+                                                                        <v-divider></v-divider>
+
+                                                                        <v-card-actions>
+                                                                            <v-spacer></v-spacer>
+                                                                            <v-btn color="#E57373"
+                                                                                   text
+                                                                                   @click="dialog_add_hr = false">
+                                                                                <v-icon left>
+                                                                                    mdi-close-octagon
+                                                                                </v-icon>
+                                                                                Cancelar
+                                                                            </v-btn>
+                                                                            <v-btn color="success"
+                                                                                   text
+                                                                                   @click="save_horario(editedItem_cad_horas.dia_semana)">
+                                                                                <v-icon left>
+                                                                                    mdi-content-save-outline
+                                                                                </v-icon>
+                                                                                Salvar
+                                                                            </v-btn>
+                                                                        </v-card-actions>
+                                                                    </v-card>
+                                                                </v-dialog>
+                                                            </div>
+                                                        </v-col>
+
+                                                    </v-row>
+                                                </v-container>
+                                            </v-card-text>
+
+                                            <v-divider></v-divider>
+
+                                            <v-card-actions>
+                                                <v-spacer></v-spacer>
+                                                <v-btn color="success"
+                                                       text
+                                                       @click="close_cad_horas()">
+                                                    Pronto
+                                                </v-btn>
+                                            </v-card-actions>
+                                        </v-card>
+                                    </v-dialog>
+                                </v-toolbar>
+                            </template>
+
+                            <template v-slot:item.aberto_fechado="props">
+                                <br>
+                                <v-switch v-model="props.item.aberto_fechado"
+                                          :label="props.item.aberto_fechado_label"
+                                          @change="alterar_func(props.item)"
+                                          @click="if(props.item.aberto_fechado == true){props.item.aberto_fechado_label = 'Aberto'}else{props.item.aberto_fechado_label = 'Fechado'}"></v-switch>
+                            </template>
+
+                            <template v-slot:item.actions="{ item }">
+                                <v-icon small
+                                        class="mr-2"
+                                        @click="editItem_cad_horas(item)">
+                                    mdi-pencil
+                                </v-icon>
+                            </template>
+                        </v-data-table>
+                    </v-col>
+                </v-row>
+
+
+                <v-row dense justify="center">
+                    <v-col cols="2" sm="1">
+                        <v-btn color="primary"
+                               x-large
+                               @click="salvar()">
+                            Salvar
+                        </v-btn>
+                    </v-col>
+                </v-row>
+            </v-card>
+
+        </v-app>
+    </div>
+
+    <script>
+
+        function encode_logo() {
+
+            if (document.getElementById("input_cmprss_logo").files.length > 0 || app.__vue__.primeiro_acesso == true) {
+                imagem_alterou = 1
+                app.__vue__.primeiro_acesso = false
+
+                let comp_logo = Compress({
+                    inputSelector: '#input_cmprss_logo',
+                    downloadSelector: '#comp_download_logo',
+                    imageSelector: '#comp_img_logo',
+                    rate: 50,
+                    dimen: { width: 300, height: 300 },
+                });
+
+
+            }
+
+        }
+
+        Vue.use(VueMask.VueMaskPlugin);
+        new Vue({
+            el: '#app',
+            vuetify: new Vuetify(),
+            data: vm => ({
+                url: 'https://softenter.com.br',
+                show1: false,
+                usuario: '',
+                password: '',
+                dialog_login: true,
+                snackbar: false,
+                text_aviso: '',
+                cor_aviso: "success",
+                icon: 'mdi-check-circle',
+                nome_empresa: '',
+                endereco: '',
+                telefone: '',
+                nome_link: '',
+                cnpj: '',
+                licenca: '',
+                check_control_est: false,
+                check_leitor: false,
+                check_a4: false,
+                check_termica: false,
+                horarios_segunda: [],
+                horarios_terca: [],
+                horarios_quarta: [],
+                horarios_quinta: [],
+                horarios_sexta: [],
+                horarios_sabado: [],
+                horarios_domingo: [],
+                horarios_feriado: [],
+                dias_alterados: [],
+                dialog_add_hr: false,
+                add_hr: '',
+                exib_erro_add_hr: false,
+                dialog_cad_horas: false,
+                aberto_fechado_label: '',
+                primeiro_acesso: true,
+
+                headers_cad_horas: [
+                    { text: 'Aberto/fechado', align: 'start', width: '220', value: 'aberto_fechado', sortable: false },
+                    { text: 'Dia da semana', align: 'start', value: 'dia_semana', sortable: false }, 
+                    { text: 'Alterar', value: 'actions', sortable: false },
+                ],
+                cad_horas_Itens: [],
+                editedIndex: -1,
+                editedItem_cad_horas: {
+                    dia_semana: '',
+                    aberto_fechado: false,
+                },
+                defaultItem_cad_horas: {
+                    dia_semana: '',
+                    aberto_fechado: false,
+                },
+            }),
+
+            watch: {
+                dialog_cad_horas(val) {
+                    val || this.close_cad_horas()
+                },
+
+                dialog_add_hr(val) {
+                    this.exib_erro_add_hr = false
+                    this.add_hr = ''
+                },
+            },
+
+            created() {
+                
+                this.initialize()
+                this.initialize_cad_horas()
+                this.info_empresa()
+                if (sessionStorage.login_ativo != 'true') {
+                    window.location.href = this.url + "/login.html";
+                }
+
+                if (sessionStorage.usuadm == '0') {
+                    this.disabled_sem_perm = true
+                }
+
+
+            },
+
+            methods: {
+
+                alterar_func(funcionamento) {
+
+                    if (typeof this.dias_alterados.find(element => element == funcionamento.dia_semana) === 'undefined') {
+                        this.dias_alterados.push(funcionamento.dia_semana)
+                    }
+                },
+
+                async initialize_cad_horas() {
+
+                    this.cad_horas_Itens = [
+                        {
+                            aberto_fechado: false,
+                            aberto_fechado_label: 'Fechado',
+                            dia_semana: 'Segunda',
+                        },
+                        {
+                            aberto_fechado: false,
+                            aberto_fechado_label: 'Fechado',
+                            dia_semana: 'Terça',
+                        },
+                        {
+                            aberto_fechado: false,
+                            aberto_fechado_label: 'Fechado',
+                            dia_semana: 'Quarta',
+                        },
+                        {
+                            aberto_fechado: false,
+                            aberto_fechado_label: 'Fechado',
+                            dia_semana: 'Quinta',
+                        },
+                        {
+                            aberto_fechado: false,
+                            aberto_fechado_label: 'Fechado',
+                            dia_semana: 'Sexta',
+                        },
+                        {
+                            aberto_fechado: false,
+                            aberto_fechado_label: 'Fechado',
+                            dia_semana: 'Sábado',
+                        },
+                        {
+                            aberto_fechado: false,
+                            aberto_fechado_label: 'Fechado',
+                            dia_semana: 'Domingo',
+                        },
+                       /* {
+                            aberto_fechado: false,
+                            aberto_fechado_label: 'Fechado',
+                            dia_semana: 'Feriado',
+                        },*/
+                    ]
+
+                    listar = await axios.get(this.url + '/api/agenda_horarios/listar/agenda_horarios?Fk_empresa=' + sessionStorage.id_empresalogado)
+
+                    for (var i = 0; i < listar.data.length; i++) {
+
+                        id_dia_semana = this.cad_horas_Itens.findIndex(({ dia_semana }) => dia_semana.toUpperCase() === listar.data[i].dia_semana.toUpperCase()) 
+
+                        if (listar.data[i].aberto == '1') {
+                            aberto = true
+                            aberto_label = 'Aberto'
+                        } else {
+                            aberto = false
+                            aberto_label = 'Fechado'
+                        }
+
+                        this.cad_horas_Itens[id_dia_semana].aberto_fechado = aberto
+                        this.cad_horas_Itens[id_dia_semana].aberto_fechado_label = aberto_label
+
+                        if (listar.data[i].dia_semana == 'Segunda') {
+                            this.horarios_segunda.push(listar.data[i].horario.slice(0, 5))
+                        }
+                        if (listar.data[i].dia_semana == 'Terça') {
+                            this.horarios_terca.push(listar.data[i].horario.slice(0, 5))
+                        }
+                        if (listar.data[i].dia_semana == 'Quarta') {
+                            this.horarios_quarta.push(listar.data[i].horario.slice(0, 5))
+                        }
+                        if (listar.data[i].dia_semana == 'Quinta') {
+                            this.horarios_quinta.push(listar.data[i].horario.slice(0, 5))
+                        }
+                        if (listar.data[i].dia_semana == 'Sexta') {
+                            this.horarios_sexta.push(listar.data[i].horario.slice(0, 5))
+                        }
+                        if (listar.data[i].dia_semana == 'Sábado') {
+                            this.horarios_sabado.push(listar.data[i].horario.slice(0, 5))
+                        }
+                        if (listar.data[i].dia_semana == 'Domingo') {
+                            this.horarios_domingo.push(listar.data[i].horario.slice(0, 5))
+                        }
+                       /* if (listar.data[i].dia_semana == 'Feriado') {
+                            this.horarios_feriado.push(listar.data[i].horario.slice(0, 5))
+                        }*/
+                    
+                    }
+                },
+
+                editItem_cad_horas(item) {
+                    this.editedIndex_cad_horas = this.cad_horas_Itens.indexOf(item)
+                    this.editedItem_cad_horas = Object.assign({}, item)
+                    this.dialog_cad_horas = true
+                },
+
+                close_cad_horas() {
+                    this.dialog_cad_horas = false
+                    this.$nextTick(() => {
+                        this.editedItem_cad_horas = Object.assign({}, this.defaultItem_cad_horas)
+                        this.editedIndex_cad_horas = -1
+                    })
+                },
+
+                save_horario(dia_semana) {
+
+                    if (parseInt(this.add_hr.slice(0, 2)) > 23) {
+                        this.exib_erro_add_hr = true
+                        return
+                    }
+                    if (parseInt(this.add_hr.slice(3, 5)) > 59) {
+                        this.exib_erro_add_hr = true
+                        return
+                    }
+                    if (this.add_hr == '') {
+                        this.exib_erro_add_hr = true
+                        return
+                    }
+                    if (this.add_hr.length < 5) {
+                        this.exib_erro_add_hr = true
+                        return
+                    }
+
+                    if (dia_semana == 'Segunda') {
+                        this.horarios_segunda.push(this.add_hr)
+                    }
+                    if (dia_semana == 'Terça') {
+                        this.horarios_terca.push(this.add_hr)
+                    }
+                    if (dia_semana == 'Quarta') {
+                        this.horarios_quarta.push(this.add_hr)
+                    }
+                    if (dia_semana == 'Quinta') {
+                        this.horarios_quinta.push(this.add_hr)
+                    }
+                    if (dia_semana == 'Sexta') {
+                        this.horarios_sexta.push(this.add_hr)
+                    }
+                    if (dia_semana == 'Sábado') {
+                        this.horarios_sabado.push(this.add_hr)
+                    }
+                    if (dia_semana == 'Domingo') {
+                        this.horarios_domingo.push(this.add_hr)
+                    }
+                 /*   if (dia_semana == 'Feriado') {
+                        this.horarios_feriado.push(this.add_hr)
+                    }*/
+
+                    if (typeof this.dias_alterados.find(element => element == dia_semana) === 'undefined') {
+                        this.dias_alterados.push(dia_semana)
+                    }
+                    
+                    this.add_hr = ''
+                    this.dialog_add_hr = false
+                },
+
+                remove_horario(item) {
+                    if (this.editedItem_cad_horas.dia_semana == 'Segunda') { 
+                        this.horarios_segunda.splice(this.horarios_segunda.indexOf(item), 1)
+
+                        if (typeof this.dias_alterados.find(element => element == this.editedItem_cad_horas.dia_semana) === 'undefined') {
+                            this.dias_alterados.push(this.editedItem_cad_horas.dia_semana)
+                        }
+                    }
+                    if (this.editedItem_cad_horas.dia_semana == 'Terça') {
+                        this.horarios_terca.splice(this.horarios_terca.indexOf(item), 1)
+
+                        if (typeof this.dias_alterados.find(element => element == this.editedItem_cad_horas.dia_semana) === 'undefined') {
+                            this.dias_alterados.push(this.editedItem_cad_horas.dia_semana)
+                        }
+                    }
+                    if (this.editedItem_cad_horas.dia_semana == 'Quarta') {
+                        this.horarios_quarta.splice(this.horarios_quarta.indexOf(item), 1)
+
+                        if (typeof this.dias_alterados.find(element => element == this.editedItem_cad_horas.dia_semana) === 'undefined') {
+                            this.dias_alterados.push(this.editedItem_cad_horas.dia_semana)
+                        }
+                    }
+                    if (this.editedItem_cad_horas.dia_semana == 'Quinta') {
+                        this.horarios_quinta.splice(this.horarios_quinta.indexOf(item), 1)
+
+                        if (typeof this.dias_alterados.find(element => element == this.editedItem_cad_horas.dia_semana) === 'undefined') {
+                            this.dias_alterados.push(this.editedItem_cad_horas.dia_semana)
+                        }
+                    }
+                    if (this.editedItem_cad_horas.dia_semana == 'Sexta') {
+                        this.horarios_sexta.splice(this.horarios_sexta.indexOf(item), 1)
+
+                        if (typeof this.dias_alterados.find(element => element == this.editedItem_cad_horas.dia_semana) === 'undefined') {
+                            this.dias_alterados.push(this.editedItem_cad_horas.dia_semana)
+                        }
+                    }
+                    if (this.editedItem_cad_horas.dia_semana == 'Sábado') {
+                        this.horarios_sabado.splice(this.horarios_sabado.indexOf(item), 1)
+
+                        if (typeof this.dias_alterados.find(element => element == this.editedItem_cad_horas.dia_semana) === 'undefined') {
+                            this.dias_alterados.push(this.editedItem_cad_horas.dia_semana)
+                        }
+                    }
+                    if (this.editedItem_cad_horas.dia_semana == 'Domingo') {
+                        this.horarios_domingo.splice(this.horarios_domingo.indexOf(item), 1)
+
+                        if (typeof this.dias_alterados.find(element => element == this.editedItem_cad_horas.dia_semana) === 'undefined') {
+                            this.dias_alterados.push(this.editedItem_cad_horas.dia_semana)
+                        }
+                    }
+                   /* if (this.editedItem_cad_horas.dia_semana == 'Feriado') {
+                        this.horarios_feriado.splice(this.horarios_feriado.indexOf(item), 1)
+
+                        if (typeof this.dias_alterados.find(element => element == this.editedItem_cad_horas.dia_semana) === 'undefined') {
+                            this.dias_alterados.push(this.editedItem_cad_horas.dia_semana)
+                        }
+                    }*/
+                },
+
+                form_imp_termica() {
+                    if (this.check_a4 == true) {
+                        this.check_a4 = false
+                    }
+                },
+                form_imp_a4() {
+                    if (this.check_termica == true) {
+                        this.check_termica = false
+                    }
+                },
+
+
+                info_empresa() {
+                    this.nome_empresa = sessionStorage.nome_empresa
+                },
+
+                async initialize() {
+
+                    listar = await axios.get(this.url + '/api/empresa_config/listar/empresa_config?Id_empresa=' + sessionStorage.id_empresalogado)
+
+                    if (localStorage.control_est == "true") {
+                        this.check_control_est = true
+                    } else {
+                        this.check_control_est = false
+                    }
+
+                    if (localStorage.leitor_barras == "true") {
+                        this.check_leitor = true
+                    } else {
+                        this.check_leitor = false
+                    }
+
+                    if (localStorage.imp_a4 == "true") {
+                        this.check_a4 = true
+                    } else {
+                        this.check_a4 = false
+                    }
+
+                    if (localStorage.imp_termica == "true") {                
+                        this.check_termica = true
+                    } else {
+                        this.check_termica = false
+                    }
+
+                    if (localStorage.imp_termica == "false" && localStorage.imp_a4 == "false") {
+                        this.check_a4 = true
+                    }
+
+                    
+
+                    this.nome_empresa = listar.data[0].nome
+                    this.endereco = listar.data[0].endereco
+                    this.telefone = listar.data[0].telefone
+                    this.cnpj = listar.data[0].cnpj
+                    this.nome_link = listar.data[0].nome_link
+
+                    encode_logo()
+                    document.getElementById("input_cmprss_logo").value = ''
+     
+                    if (listar.data[0].logo != "") {
+                        document.getElementById("comp_img_logo").src = listar.data[0].logo;
+                    } else {
+                        document.getElementById("comp_img_logo").src = 'https://i.ibb.co/n1g2HRY/addimagem.jpg'
+                    }
+
+
+                    this.licenca = 'Sua licença expira em: ' + listar.data[0].data_licenca.slice(0, 10)
+                },
+
+                async salvar() {
+                    try {
+                        this.carregando = true
+
+                        if (this.dias_alterados.length > 0) {
+
+                            let dia_semana = (JSON.stringify(this.dias_alterados).slice(1, JSON.stringify(this.dias_alterados).length - 1)).replaceAll('"', "'")
+
+                            await axios.delete(this.url + '/api/agenda_horarios/Agenda_horarios/deletar?dia_semana=' + dia_semana +'&fk_empresa=' + sessionStorage.id_empresalogado)
+
+                            for (i = 0; i < this.dias_alterados.length; i++) {
+
+                                if (this.dias_alterados[i] == 'Segunda' && this.cad_horas_Itens[0].aberto_fechado == true) { 
+                                    for (x = 0; x < this.horarios_segunda.length; x++) {
+                                        salvar_resq = await axios.post(this.url + '/api/agenda_horarios/Agenda_horarios/salvar?aberto=1&dia_semana=Segunda&horario=' + this.horarios_segunda[x] + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                                    }
+                                }
+                                if (this.dias_alterados[i] == 'Terça' && this.cad_horas_Itens[1].aberto_fechado == true) {
+                                    for (x = 0; x < this.horarios_terca.length; x++) {
+                                        salvar_resq = await axios.post(this.url + '/api/agenda_horarios/Agenda_horarios/salvar?aberto=1&dia_semana=Terça&horario=' + this.horarios_terca[x] + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                                    }
+                                }
+                                if (this.dias_alterados[i] == 'Quarta' && this.cad_horas_Itens[2].aberto_fechado == true) {
+                                    for (x = 0; x < this.horarios_quarta.length; x++) {
+                                        salvar_resq = await axios.post(this.url + '/api/agenda_horarios/Agenda_horarios/salvar?aberto=1&dia_semana=Quarta&horario=' + this.horarios_quarta[x] + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                                    }
+                                }
+                                if (this.dias_alterados[i] == 'Quinta' && this.cad_horas_Itens[3].aberto_fechado == true) {
+                                    for (x = 0; x < this.horarios_quinta.length; x++) {
+                                        salvar_resq = await axios.post(this.url + '/api/agenda_horarios/Agenda_horarios/salvar?aberto=1&dia_semana=Quinta&horario=' + this.horarios_quinta[x] + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                                    }
+                                }
+                                if (this.dias_alterados[i] == 'Sexta' && this.cad_horas_Itens[4].aberto_fechado == true) {
+                                    for (x = 0; x < this.horarios_sexta.length; x++) {
+                                        salvar_resq = await axios.post(this.url + '/api/agenda_horarios/Agenda_horarios/salvar?aberto=1&dia_semana=Sexta&horario=' + this.horarios_sexta[x] + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                                    }
+                                }
+                                if (this.dias_alterados[i] == 'Sábado' && this.cad_horas_Itens[5].aberto_fechado == true) {
+                                    for (x = 0; x < this.horarios_sabado.length; x++) {
+                                        salvar_resq = await axios.post(this.url + '/api/agenda_horarios/Agenda_horarios/salvar?aberto=1&dia_semana=Sábado&horario=' + this.horarios_sabado[x] + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                                    }
+                                }
+                                if (this.dias_alterados[i] == 'Domingo' && this.cad_horas_Itens[6].aberto_fechado == true) {
+                                    for (x = 0; x < this.horarios_segunda.length; x++) {
+                                        salvar_resq = await axios.post(this.url + '/api/agenda_horarios/Agenda_horarios/salvar?aberto=1&dia_semana=Domingo&horario=' + this.horarios_domingo[x] + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                                    }
+                                }
+                             /*   if (this.dias_alterados[x] == 'Feriado') {
+                                    for (x = 0; x < this.horarios_feriado.length; x++) {
+                                        salvar_resq = await axios.post(this.url + '/api/agenda_horarios/Agenda_horarios/salvar?aberto=1&dia_semana=Feriado&horario=' + this.horarios_feriado[x] + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                                    }
+                                } */
+
+                            }
+                        }
+
+                        if (this.check_control_est == true) {
+                            localStorage.control_est = "true";
+                        } else {
+                            localStorage.control_est = "false";
+                        }
+
+                        if (this.check_leitor == true) {
+                            localStorage.leitor_barras = "true";
+                        } else {
+                            localStorage.leitor_barras = "false";
+                        }
+
+                        if (this.check_a4 == true) {
+                            localStorage.imp_a4 = "true";
+                        } else {
+                            localStorage.imp_a4 = "false";
+                        }
+
+                        if (this.check_termica == true) {
+                            localStorage.imp_termica = "true";
+                        } else {
+                            localStorage.imp_termica = "false";
+                        }
+
+                        if (localStorage.imp_termica == "false" && localStorage.imp_a4 == "false") {
+                            localStorage.imp_a4 = "true";
+                        }
+                        
+                        await axios.post(this.url + '/api/empresa_config/empresa_config/alterar?Nome=' + this.nome_empresa + '&Endereco=' + this.endereco + '&Telefone=' + this.telefone + '&Cnpj=' + this.cnpj + '&Nome_link=' + this.nome_link + '&Taxa_entrega=0&Id=' + sessionStorage.id_empresalogado)
+
+                        if (imagem_alterou == 1) {
+
+                            imagem_alterou = 0
+                            axios.delete(this.url + '/api/empresa_config/empresa_config/deletar_foto?fk_empresa=' + sessionStorage.id_empresalogado)
+
+                            ini = 0
+                            fim = 2000
+                            //teste = 0
+                            do {
+                                imagem2000carac = document.getElementById('comp_img_logo').currentSrc.substr(ini, 1000)
+                                imagem2000carac = imagem2000carac.replaceAll("+", "**maisx");
+                                ini = ini + 1000
+                                salvar_resq = await axios.post(this.url + '/api/empresa_config/empresa_config/altera_foto/?imagem=' + imagem2000carac + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                            } while (imagem2000carac != '')
+                        }
+
+                        this.carregando = false
+
+                        this.snackbar = true
+                        this.text_aviso = 'Salvo com sucesso !'
+                        this.cor_aviso = "success"
+                        this.icon = "mdi-mdi-check-circle"
+                      
+                        setTimeout(function () {
+                            window.location.href = "https://softenter.com.br/login.html";
+                        }, 2000);
+                    }
+                    catch (err) {
+                        alert("Erro: " + err.message);
+                        this.carregando = false
+                    }
+                },
+
+            }
+
+        })
+    </script>
+
+</body>
+</html >

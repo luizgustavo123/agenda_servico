@@ -1,0 +1,2033 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" type="imagem/png" href="https://i.ibb.co/Cwbt6V2/LOGO-2.png" />
+    <meta charset="utf-8" />
+    <title>Softenter</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
+    <style>
+        #app {
+            background-color: lightblue;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://unpkg.com/axios@1.0.0/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/v-mask/dist/v-mask.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.4.1/jspdf.debug.js" integrity="sha384-THVO/sM0mFD9h7dfSndI6TS0PgAGavwKvB5hAxRRvc0o9cPLohB0wb/PTA7LdUHs" crossorigin="anonymous"></script>
+
+
+    <div id="app">
+
+        <v-app id="inspire">
+            <!--menu superior-->
+            <div>
+                <v-app-bar color="#5C6BC0"
+                           dark>
+                    <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
+
+
+                    <v-toolbar-title>
+                        <h4>{{nome_empresa}}</h4>
+                    </v-toolbar-title>
+
+                    <v-spacer></v-spacer>
+
+                    <h5>usuário: {{funcionario.toUpperCase()}}</h5>
+                </v-app-bar>
+            </div>
+            <v-navigation-drawer v-model="drawer"
+                                 absolute
+                                 dark
+                                 color="indigo"
+                                 temporary>
+                <v-list nav
+                        dense>
+                    <v-list-item-group v-model="group"
+                                       active-class="deep-purple--text text--accent-4">
+                        <v-list-item onclick="window.location.href ='https://softenter.com.br/vendas.html'">
+                            <v-list-item-icon>
+                                <v-icon>mdi-cash-register</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title>Vendas</v-list-item-title>
+
+                        </v-list-item>
+
+                        <v-list-item onclick="window.location.href ='https://softenter.com.br/produtos.html'">
+                            <v-list-item-icon>
+                                <v-icon>mdi-package-variant-closed</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title>Produtos</v-list-item-title>
+                        </v-list-item>
+
+                        <v-list-item :disabled="disabled_sem_perm" onclick="window.location.href ='https://softenter.com.br/financeiro.html'">
+                            <v-list-item-icon>
+                                <v-icon>mdi-currency-usd</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title>Financeiro</v-list-item-title>
+                        </v-list-item>
+
+                        <v-list-item onclick="window.location.href ='https://softenter.com.br/clientes.html'">
+                            <v-list-item-icon>
+                                <v-icon>mdi-account-multiple</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title>Clientes</v-list-item-title>
+                        </v-list-item>
+
+                        <v-list-item :disabled="disabled_sem_perm" onclick="window.location.href ='https://softenter.com.br/funcionarios.html'">
+                            <v-list-item-icon>
+                                <v-icon>mdi-account-group</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title>Funcionários</v-list-item-title>
+                        </v-list-item>
+
+                        <v-list-item :disabled="disabled_sem_perm" onclick="window.location.href ='https://softenter.com.br/configuracoes.html'">
+                            <v-list-item-icon>
+                                <v-icon>mdi-cogs</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title>Configurações</v-list-item-title>
+                        </v-list-item>
+                    </v-list-item-group>
+                </v-list>
+                <br><br><br><br><br><br><br><br><br><br>
+
+                <v-img onclick="window.location.href ='https://api.whatsapp.com/send?phone=+5516994153485&text=%0A'"
+                       height="95"
+                       max-width="190"
+                       src="https://i.ibb.co/nmQtpJJ/celular3.png">
+                </v-img>
+
+            </v-navigation-drawer>
+
+            <v-card color="grey lighten-3"
+                    flat
+                    min-height="575px"
+                    tile>
+
+                <!--tela de aviso-->
+                <v-snackbar timeout="2000"
+                            centered
+                            elevation="24"
+                            vertical
+                            v-model="snackbar"
+                            :color="cor_aviso">
+                    <v-icon left>{{ icon }}</v-icon>
+
+                    {{ text_aviso }}
+
+                </v-snackbar>
+
+                <br>
+                <div>
+                    <v-row justify="center">
+                        <v-col cols="11" sm="8">
+
+                            <v-toolbar class="mb-2"
+                                       color="grey lighten-3"
+                                       flat>
+
+                                <v-toolbar-title class="indigo--text text--darken-1"> <v-icon color="#3949AB" left>mdi-currency-usd</v-icon> Financeiro</v-toolbar-title>
+
+                                <v-divider class="mx-4"
+                                           inset
+                                           vertical></v-divider>
+                                <v-spacer></v-spacer>
+
+                                <!--a receber-->
+                                <v-dialog v-model="dialog_areceber" width="750">
+
+                                    <v-system-bar color="indigo"
+                                                  height="30"
+                                                  dark>
+                                        <v-spacer></v-spacer>
+                                        <v-btn small
+                                               icon
+                                               color="white"
+                                               @click="dialog_areceber = false">
+                                            <v-icon>mdi-close</v-icon>
+                                        </v-btn>
+                                    </v-system-bar>
+
+                                    <v-card>
+
+                                        <v-data-table :headers="headers_areceber"
+                                                      :items="desserts_areceber"
+                                                      sort-by="calories"
+                                                      class="elevation-1"
+                                                      mobile-breakpoint="0"
+                                                      :footer-props="{'items-per-page-text':'Linhas por página'}">
+                                            <template v-slot:top>
+                                                <v-toolbar class="mb-2"
+                                                           color="indigo"
+                                                           dark
+                                                           flat>
+                                                    <v-toolbar-title>Contas a Receber</v-toolbar-title>
+
+                                                    <v-divider class="mx-4"
+                                                               inset
+                                                               vertical></v-divider>
+                                                    <v-spacer></v-spacer>
+
+                                                    <v-dialog v-model="dialog_areceber_edt"
+                                                              persistent
+                                                              max-width="600px">
+                                                        <template v-slot:activator="{ on, attrs }">
+
+
+
+                                                            <v-dialog v-model="dialog_pesq_areceber"
+                                                                      width="500">
+                                                                <template v-slot:activator="{ on, attrs_dialog_pesq_areceber }">
+                                                                    <v-btn icon
+                                                                           fab
+                                                                           color="white"
+                                                                           v-bind="attrs_dialog_pesq_areceber"
+                                                                           v-on="on">
+                                                                        <v-icon x-large>mdi-magnify</v-icon>
+                                                                    </v-btn>
+                                                                </template>
+
+                                                                <v-card>
+                                                                    <v-card-title class="headline white--text indigo lighten-2">
+                                                                        Pesquisar
+                                                                        <v-spacer></v-spacer>
+                                                                        <v-btn small
+                                                                               icon
+                                                                               color="white"
+                                                                               @click="dialog_pesq_areceber = false">
+                                                                            <v-icon>mdi-close</v-icon>
+                                                                        </v-btn>
+                                                                    </v-card-title>
+
+                                                                    <v-card-text>
+                                                                        <br>
+                                                                        <v-row dense>
+                                                                            <v-col cols="12" sm="6">
+                                                                                <v-menu v-model="menudata_venc_ini"
+                                                                                        :close-on-content-click="false"
+                                                                                        transition="scale-transition"
+                                                                                        offset-y
+                                                                                        max-width="290px"
+                                                                                        min-width="auto">
+                                                                                    <template v-slot:activator="{ on, attrs }">
+                                                                                        <v-text-field v-model="venc_ini"
+                                                                                                      label="vencimento início"
+                                                                                                      outlined
+                                                                                                      readonly
+                                                                                                      append-icon="mdi-calendar"
+                                                                                                      v-bind="attrs"
+                                                                                                      v-on="on"></v-text-field>
+
+                                                                                    </template>
+                                                                                    <v-date-picker v-model="date_venc_ini"
+                                                                                                   no-title
+                                                                                                   locale="pt-br"
+                                                                                                   @input="menudata_venc_ini = false"></v-date-picker>
+                                                                                </v-menu>
+                                                                            </v-col>
+                                                                            <v-col cols="12" sm="6">
+                                                                                <v-menu v-model="menudata_venc_fim"
+                                                                                        :close-on-content-click="false"
+                                                                                        transition="scale-transition"
+                                                                                        offset-y
+                                                                                        max-width="290px"
+                                                                                        min-width="auto">
+                                                                                    <template v-slot:activator="{ on, attrs }">
+                                                                                        <v-text-field v-model="venc_fim"
+                                                                                                      label="vencimento fim"
+                                                                                                      outlined
+                                                                                                      readonly
+                                                                                                      append-icon="mdi-calendar"
+                                                                                                      v-bind="attrs"
+                                                                                                      v-on="on"></v-text-field>
+
+                                                                                    </template>
+                                                                                    <v-date-picker v-model="date_venc_fim"
+                                                                                                   no-title
+                                                                                                   locale="pt-br"
+                                                                                                   @input="menudata_venc_fim = false"></v-date-picker>
+                                                                                </v-menu>
+                                                                            </v-col>
+                                                                        </v-row>
+                                                                        <v-row dense>
+                                                                            <v-col cols="12" sm="6">
+                                                                                <v-menu v-model="menudata_pag_ini"
+                                                                                        :close-on-content-click="false"
+                                                                                        transition="scale-transition"
+                                                                                        offset-y
+                                                                                        max-width="290px"
+                                                                                        min-width="auto">
+                                                                                    <template v-slot:activator="{ on, attrs }">
+                                                                                        <v-text-field v-model="pag_ini"
+                                                                                                      label="Pagamento início"
+                                                                                                      outlined
+                                                                                                      readonly
+                                                                                                      append-icon="mdi-calendar"
+                                                                                                      v-bind="attrs"
+                                                                                                      v-on="on"></v-text-field>
+
+                                                                                    </template>
+                                                                                    <v-date-picker v-model="date_pag_ini"
+                                                                                                   no-title
+                                                                                                   locale="pt-br"
+                                                                                                   @input="menudata_pag_ini = false"></v-date-picker>
+                                                                                </v-menu>
+                                                                            </v-col>
+                                                                            <v-col cols="12" sm="6">
+                                                                                <v-menu v-model="menudata_pag_fim"
+                                                                                        :close-on-content-click="false"
+                                                                                        transition="scale-transition"
+                                                                                        offset-y
+                                                                                        max-width="290px"
+                                                                                        min-width="auto">
+                                                                                    <template v-slot:activator="{ on, attrs }">
+                                                                                        <v-text-field v-model="pag_fim"
+                                                                                                      label="Pagamento fim"
+                                                                                                      outlined
+                                                                                                      readonly
+                                                                                                      append-icon="mdi-calendar"
+                                                                                                      v-bind="attrs"
+                                                                                                      v-on="on"></v-text-field>
+
+                                                                                    </template>
+                                                                                    <v-date-picker v-model="date_pag_fim"
+                                                                                                   no-title
+                                                                                                   locale="pt-br"
+                                                                                                   @input="menudata_pag_fim = false"></v-date-picker>
+                                                                                </v-menu>
+                                                                            </v-col>
+                                                                        </v-row>
+                                                                        <v-row dense>
+                                                                            <v-col cols="4" sm="4">
+                                                                                <v-select v-model="status" :items="items_status" label="Status" outlined></v-select>
+                                                                            </v-col>
+                                                                            <v-col cols="8" sm="8">
+                                                                                <v-text-field v-model="cliente" label="cliente" outlined></v-text-field>
+
+                                                                            </v-col>
+                                                                        </v-row>
+                                                                    </v-card-text>
+
+                                                                    <v-divider></v-divider>
+
+                                                                    <v-card-actions>
+                                                                        <v-spacer></v-spacer>
+                                                                        <v-btn color="primary"
+                                                                               text
+                                                                               @click="pesq_areceber()">
+                                                                            <v-icon left>mdi-magnify</v-icon>
+                                                                            Pesquisar
+                                                                        </v-btn>
+                                                                    </v-card-actions>
+                                                                </v-card>
+                                                            </v-dialog>
+
+                                                            <v-divider class="mx-4" inset vertical></v-divider>
+
+                                                            <v-btn icon
+                                                                   color="white"
+                                                                   @click="imprimir_areceber()">
+                                                                <v-icon>mdi-printer</v-icon>
+                                                            </v-btn>
+
+                                                        </template>
+
+                                                        <v-card>
+                                                            <v-card-title>
+                                                                <span class="headline">{{ formTitle }}</span>
+                                                            </v-card-title>
+
+                                                            <v-card-text>
+                                                                <v-row dense>
+                                                                    <v-col cols="3" sm="2">
+                                                                        <v-checkbox v-model="editedItem_areceber.pago"
+                                                                                    color="success"
+                                                                                    label="Pago"></v-checkbox>
+                                                                    </v-col>
+                                                                    <v-col cols="3" sm="3">
+                                                                        <v-text-field v-model="editedItem_areceber.valor" label="valor" outlined></v-text-field>
+
+                                                                    </v-col>
+                                                                    <v-col cols="4" sm="5">
+                                                                        <v-menu v-model="menudata_vencimento"
+                                                                                :close-on-content-click="false"
+                                                                                transition="scale-transition"
+                                                                                offset-y
+                                                                                max-width="290px"
+                                                                                min-width="auto">
+                                                                            <template v-slot:activator="{ on, attrs }">
+                                                                                <v-text-field v-model="editedItem_areceber.vencimento"
+                                                                                              label="vencimento"
+                                                                                              outlined
+                                                                                              readonly
+                                                                                              append-icon="mdi-calendar"
+                                                                                              v-bind="attrs"
+                                                                                              v-on="on"></v-text-field>
+
+                                                                            </template>
+                                                                            <v-date-picker v-model="date_vencimento"
+                                                                                           no-title
+                                                                                           locale="pt-br"
+                                                                                           @input="menudata_vencimento = false"></v-date-picker>
+                                                                        </v-menu>
+                                                                    </v-col>
+                                                                    <v-col cols="2" sm="2">
+                                                                        <v-text-field readonly v-model="editedItem_areceber.parcela" label="parcela" outlined></v-text-field>
+
+                                                                    </v-col>
+                                                                </v-row>
+                                                                <v-row dense>
+                                                                    <v-col cols="8" sm="8">
+                                                                        <v-text-field readonly v-model="editedItem_areceber.cliente" label="cliente" outlined></v-text-field>
+
+                                                                    </v-col>
+                                                                    <v-col cols="4" sm="4">
+                                                                        <v-text-field readonly v-model="editedItem_areceber.data_pagamento" label="Data Pagamento" outlined></v-text-field>
+
+                                                                    </v-col>
+                                                                </v-row>
+
+
+                                                                <v-dialog persistent width="200" v-model="carregando">
+                                                                    <v-card color="primary"
+                                                                            dark>
+                                                                        <v-card-text>
+                                                                            Carregando... Aguarde !
+                                                                            <v-progress-linear indeterminate
+                                                                                               color="white"
+                                                                                               class="mb-0">
+                                                                            </v-progress-linear>
+                                                                        </v-card-text>
+                                                                    </v-card>
+                                                                </v-dialog>
+
+                                                            </v-card-text>
+
+                                                            <v-divider></v-divider>
+
+                                                            <v-card-actions>
+                                                                <v-spacer></v-spacer>
+                                                                <v-btn color="#E57373"
+                                                                       text
+                                                                       @click="close">
+                                                                    <v-icon left>
+                                                                        mdi-close-octagon
+                                                                    </v-icon>
+                                                                    Cancelar
+                                                                </v-btn>
+                                                                <v-btn color="success"
+                                                                       text
+                                                                       @click="save_contareceber()">
+                                                                    <v-icon left>
+                                                                        mdi-content-save-outline
+                                                                    </v-icon>
+                                                                    Salvar
+                                                                </v-btn>
+                                                            </v-card-actions>
+                                                        </v-card>
+                                                    </v-dialog>
+                                                </v-toolbar>
+                                            </template>
+                                            <template v-slot:footer>
+                                                <div>
+                                                    <h4 class="text-right">
+                                                        <br>
+                                                        TOTAL: {{total_conta_receber}} &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                                    </h4>
+                                                </div>
+                                            </template>
+                                            <template v-slot:item.actions="{ item }">
+                                                <v-icon small
+                                                        class="mr-2"
+                                                        @click="editItem(item)">
+                                                    mdi-pencil
+                                                </v-icon>
+                                                <v-icon small
+                                                        color="red"
+                                                        @click="deleteItem_areceber(item)">
+                                                    mdi-close
+                                                </v-icon>
+                                            </template>
+                                            <template v-slot:no-data>
+                                                <v-alert :value="true">
+                                                    Sem resultados a exibir
+                                                </v-alert>
+                                            </template>
+
+                                            <template v-slot:item.status_desc="{ item }">
+                                                <v-chip :text-color="textColor(item.status_desc)" :color="getColor(item.status_desc)"
+                                                        dark>
+
+                                                    <h4>{{ item.status_desc }}</h4>
+
+                                                </v-chip>
+                                            </template>
+
+                                        </v-data-table>
+                                    </v-card>
+                                </v-dialog>
+
+                                <!--a pagar-->
+                                <v-dialog v-model="dialog_pagar" width="750">
+
+                                    <v-system-bar color="indigo"
+                                                  height="30"
+                                                  dark>
+                                        <v-spacer></v-spacer>
+                                        <v-btn small
+                                               icon
+                                               color="black"
+                                               @click="dialog_pagar = false">
+                                            <v-icon>mdi-close</v-icon>
+                                        </v-btn>
+                                    </v-system-bar>
+
+                                    <v-card>
+
+                                        <v-data-table :headers="headers_pagar"
+                                                      :items="desserts_pagar"
+                                                      sort-by="calories"
+                                                      class="elevation-1"
+                                                      mobile-breakpoint="0"
+                                                      :footer-props="{'items-per-page-text':'Linhas por página'}">
+
+
+                                            <template v-slot:top>
+
+                                                <v-toolbar class="mb-2"
+                                                           color="indigo"
+                                                           dark
+                                                           flat>
+                                                    <v-toolbar-title>
+                                                        Contas a Pagar
+                                                    </v-toolbar-title>
+
+                                                    <v-divider class="mx-4"
+                                                               inset
+                                                               vertical></v-divider>
+                                                    <v-spacer></v-spacer>
+
+                                                    <v-dialog v-model="dialog_pagar_edt"
+                                                              persistent
+                                                              max-width="600px">
+                                                        <template v-slot:activator="{ on, attrs }">
+
+                                                            <v-btn icon fab color="white" class="mb-2" v-bind="attrs" v-on="on" x-large>
+
+                                                                <v-icon x-large>mdi-plus-circle</v-icon>
+                                                            </v-btn>
+
+                                                            <v-divider class="mx-4" inset vertical></v-divider>
+
+
+                                                            <v-dialog v-model="dialog_pesq_pagar"
+                                                                      width="500">
+                                                                <template v-slot:activator="{ on, attrs_dialog_pesq_pagar }">
+                                                                    <v-btn icon
+                                                                           fab
+                                                                           color="white"
+                                                                           v-bind="attrs_dialog_pesq_pagar"
+                                                                           v-on="on">
+                                                                        <v-icon>mdi-magnify</v-icon>
+                                                                    </v-btn>
+                                                                </template>
+
+                                                                <v-card>
+                                                                    <v-card-title class="headline white--text indigo lighten-2">
+                                                                        Pesquisar
+                                                                        <v-spacer></v-spacer>
+                                                                        <v-btn small
+                                                                               icon
+                                                                               color="white"
+                                                                               @click="dialog_pesq_pagar = false">
+                                                                            <v-icon>mdi-close</v-icon>
+                                                                        </v-btn>
+                                                                    </v-card-title>
+
+                                                                    <v-card-text>
+                                                                        <br>
+                                                                        <v-row dense>
+                                                                            <v-col cols="12" sm="6">
+                                                                                <v-menu v-model="menudata_venc_ini_pagar"
+                                                                                        :close-on-content-click="false"
+                                                                                        transition="scale-transition"
+                                                                                        offset-y
+                                                                                        max-width="290px"
+                                                                                        min-width="auto">
+                                                                                    <template v-slot:activator="{ on, attrs }">
+                                                                                        <v-text-field v-model="venc_ini_pagar"
+                                                                                                      label="vencimento início"
+                                                                                                      outlined
+                                                                                                      readonly
+                                                                                                      append-icon="mdi-calendar"
+                                                                                                      v-bind="attrs"
+                                                                                                      v-on="on"></v-text-field>
+
+                                                                                    </template>
+                                                                                    <v-date-picker v-model="date_venc_ini_pagar"
+                                                                                                   no-title
+                                                                                                   locale="pt-br"
+                                                                                                   @input="menudata_venc_ini_pagar = false"></v-date-picker>
+                                                                                </v-menu>
+                                                                            </v-col>
+                                                                            <v-col cols="12" sm="6">
+                                                                                <v-menu v-model="menudata_venc_fim_pagar"
+                                                                                        :close-on-content-click="false"
+                                                                                        transition="scale-transition"
+                                                                                        offset-y
+                                                                                        max-width="290px"
+                                                                                        min-width="auto">
+                                                                                    <template v-slot:activator="{ on, attrs }">
+                                                                                        <v-text-field v-model="venc_fim_pagar"
+                                                                                                      label="vencimento fim"
+                                                                                                      outlined
+                                                                                                      readonly
+                                                                                                      append-icon="mdi-calendar"
+                                                                                                      v-bind="attrs"
+                                                                                                      v-on="on"></v-text-field>
+
+                                                                                    </template>
+                                                                                    <v-date-picker v-model="date_venc_fim_pagar"
+                                                                                                   no-title
+                                                                                                   locale="pt-br"
+                                                                                                   @input="menudata_venc_fim_pagar = false"></v-date-picker>
+                                                                                </v-menu>
+                                                                            </v-col>
+                                                                        </v-row>
+                                                                        <v-row dense>
+                                                                            <v-col cols="12" sm="6">
+                                                                                <v-menu v-model="menudata_pag_ini_pagar"
+                                                                                        :close-on-content-click="false"
+                                                                                        transition="scale-transition"
+                                                                                        offset-y
+                                                                                        max-width="290px"
+                                                                                        min-width="auto">
+                                                                                    <template v-slot:activator="{ on, attrs }">
+                                                                                        <v-text-field v-model="pag_ini_pagar"
+                                                                                                      label="Pagamento início"
+                                                                                                      outlined
+                                                                                                      readonly
+                                                                                                      append-icon="mdi-calendar"
+                                                                                                      v-bind="attrs"
+                                                                                                      v-on="on"></v-text-field>
+
+                                                                                    </template>
+                                                                                    <v-date-picker v-model="date_pag_ini_pagar"
+                                                                                                   no-title
+                                                                                                   locale="pt-br"
+                                                                                                   @input="menudata_pag_ini_pagar = false"></v-date-picker>
+                                                                                </v-menu>
+                                                                            </v-col>
+                                                                            <v-col cols="12" sm="6">
+                                                                                <v-menu v-model="menudata_pag_fim_pagar"
+                                                                                        :close-on-content-click="false"
+                                                                                        transition="scale-transition"
+                                                                                        offset-y
+                                                                                        max-width="290px"
+                                                                                        min-width="auto">
+                                                                                    <template v-slot:activator="{ on, attrs }">
+                                                                                        <v-text-field v-model="pag_fim_pagar"
+                                                                                                      label="Pagamento fim"
+                                                                                                      outlined
+                                                                                                      readonly
+                                                                                                      append-icon="mdi-calendar"
+                                                                                                      v-bind="attrs"
+                                                                                                      v-on="on"></v-text-field>
+
+                                                                                    </template>
+                                                                                    <v-date-picker v-model="date_pag_fim_pagar"
+                                                                                                   no-title
+                                                                                                   locale="pt-br"
+                                                                                                   @input="menudata_pag_fim_pagar = false"></v-date-picker>
+                                                                                </v-menu>
+                                                                            </v-col>
+                                                                        </v-row>
+                                                                        <v-row dense>
+                                                                            <v-col cols="4" sm="4">
+                                                                                <v-select v-model="status_pagar" :items="items_status_pagar" label="Status" outlined></v-select>
+                                                                            </v-col>
+                                                                            <v-col cols="8" sm="8">
+                                                                                <v-text-field v-model="descricao_pagar" label="Descrição" outlined></v-text-field>
+
+                                                                            </v-col>
+                                                                        </v-row>
+                                                                    </v-card-text>
+
+                                                                    <v-divider></v-divider>
+
+                                                                    <v-card-actions>
+                                                                        <v-spacer></v-spacer>
+                                                                        <v-btn color="primary"
+                                                                               text
+                                                                               @click="pesq_pagar()">
+                                                                            <v-icon left>mdi-magnify</v-icon>
+                                                                            Pesquisar
+                                                                        </v-btn>
+                                                                    </v-card-actions>
+                                                                </v-card>
+                                                            </v-dialog>
+
+
+                                                            <v-btn icon
+                                                                   color="white"
+                                                                   @click="imprimir_pagar()">
+                                                                <v-icon>mdi-printer</v-icon>
+                                                            </v-btn>
+
+                                                        </template>
+
+                                                        <v-card>
+                                                            <v-card-title>
+                                                                <span class="headline">{{ formTitle }}</span>
+                                                            </v-card-title>
+
+                                                            <v-card-text>
+                                                                <v-row dense>
+                                                                    <v-col cols="3" sm="3">
+                                                                        <v-checkbox v-model="editedItem_pagar.pago"
+                                                                                    color="success"
+                                                                                    label="Pago"></v-checkbox>
+                                                                    </v-col>
+                                                                    <v-col cols="9" sm="9">
+                                                                        <v-text-field :error="exib_erro" v-model="editedItem_pagar.descricao" label="Descrição" outlined></v-text-field>
+
+                                                                    </v-col>
+
+                                                                </v-row>
+                                                                <v-row dense>
+                                                                    <v-col cols="5" sm="2">
+                                                                        <v-text-field :error="exib_erro" v-model="editedItem_pagar.valor" label="valor" outlined></v-text-field>
+
+                                                                    </v-col>
+
+                                                                    <v-col cols="7" sm="4">
+                                                                        <v-menu v-model="menudata_vencimento_pagar"
+                                                                                :close-on-content-click="false"
+                                                                                transition="scale-transition"
+                                                                                offset-y
+                                                                                max-width="290px"
+                                                                                min-width="auto">
+                                                                            <template v-slot:activator="{ on, attrs }">
+                                                                                <v-text-field v-model="editedItem_pagar.vencimento"
+                                                                                              label="vencimento"
+                                                                                              outlined
+                                                                                              readonly
+                                                                                              append-icon="mdi-calendar"
+                                                                                              v-bind="attrs"
+                                                                                              v-on="on"></v-text-field>
+
+                                                                            </template>
+                                                                            <v-date-picker v-model="date_vencimento_pagar"
+                                                                                           no-title
+                                                                                           locale="pt-br"
+                                                                                           @input="menudata_vencimento_pagar = false"></v-date-picker>
+                                                                        </v-menu>
+                                                                    </v-col>
+
+                                                                    <v-col cols="4" sm="2">
+                                                                        <v-text-field :disabled="disabled_parcela_pagar" :error="exib_erro" v-model="editedItem_pagar.parcela" label="parcela" outlined></v-text-field>
+
+                                                                    </v-col>
+
+                                                                    <v-col cols="8" sm="4">
+                                                                        <v-menu v-model="menudata_data_pagamento_pagar"
+                                                                                :close-on-content-click="false"
+                                                                                transition="scale-transition"
+                                                                                offset-y
+                                                                                max-width="290px"
+                                                                                min-width="auto">
+                                                                            <template v-slot:activator="{ on, attrs }">
+                                                                                <v-text-field v-model="editedItem_pagar.data_pagamento"
+                                                                                              label="Data Pagamento"
+                                                                                              outlined
+                                                                                              readonly
+                                                                                              append-icon="mdi-calendar"
+                                                                                              v-bind="attrs"
+                                                                                              v-on="on"></v-text-field>
+
+                                                                            </template>
+                                                                            <v-date-picker v-model="date_data_pagamento_pagar"
+                                                                                           no-title
+                                                                                           locale="pt-br"
+                                                                                           @input="menudata_data_pagamento_pagar = false"></v-date-picker>
+                                                                        </v-menu>
+
+                                                                    </v-col>
+                                                                </v-row>
+
+
+                                                                <v-dialog persistent width="200" v-model="carregando">
+                                                                    <v-card color="primary"
+                                                                            dark>
+                                                                        <v-card-text>
+                                                                            Carregando... Aguarde !
+                                                                            <v-progress-linear indeterminate
+                                                                                               color="white"
+                                                                                               class="mb-0">
+                                                                            </v-progress-linear>
+                                                                        </v-card-text>
+                                                                    </v-card>
+                                                                </v-dialog>
+
+                                                            </v-card-text>
+
+                                                            <v-divider></v-divider>
+
+                                                            <v-card-actions>
+                                                                <v-spacer></v-spacer>
+                                                                <v-btn color="#E57373"
+                                                                       text
+                                                                       @click="close_conta_pagar()">
+                                                                    <v-icon left>
+                                                                        mdi-close-octagon
+                                                                    </v-icon>
+                                                                    Cancelar
+                                                                </v-btn>
+                                                                <v-btn color="success"
+                                                                       text
+                                                                       @click="save_conta_pagar()">
+                                                                    <v-icon left>
+                                                                        mdi-content-save-outline
+                                                                    </v-icon>
+                                                                    Salvar
+                                                                </v-btn>
+                                                            </v-card-actions>
+                                                        </v-card>
+                                                    </v-dialog>
+                                                </v-toolbar>
+                                            </template>
+                                            <template v-slot:footer>
+                                                <div>
+                                                    <h4 class="text-right">
+                                                        <br>
+                                                        TOTAL: {{total_conta_pagar}} &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                                    </h4>
+                                                </div>
+                                            </template>
+                                            <template v-slot:item.actions="{ item }">
+                                                <v-icon small
+                                                        class="mr-2"
+                                                        @click="editItem_pagar(item)">
+                                                    mdi-pencil
+                                                </v-icon>
+                                                <v-icon small
+                                                        color="red"
+                                                        @click="deleteItem_pagar(item)">
+                                                    mdi-close
+                                                </v-icon>
+                                            </template>
+                                            <template v-slot:no-data>
+                                                <v-alert :value="true">
+                                                    Sem resultados a exibir
+                                                </v-alert>
+                                            </template>
+
+                                            <template v-slot:item.status_desc="{ item }">
+                                                <v-chip :text-color="textColor(item.status_desc)" :color="getColor(item.status_desc)"
+                                                        dark>
+
+                                                    <h4>{{ item.status_desc }}</h4>
+
+                                                </v-chip>
+                                            </template>
+
+                                        </v-data-table>
+
+                                    </v-card>
+                                </v-dialog>
+
+                                <!--tela de pesquisa dashboard-->
+                                <v-dialog v-model="dialog_pesq"
+                                          width="500">
+                                    <template v-slot:activator="{ on, attrs_dialog_pesq }">
+                                        <v-btn v-bind="attrs_dialog_pesq"
+                                               v-on="on"
+                                               icon
+                                               color="#3949AB"
+                                               fab>
+                                            <v-icon large>mdi-magnify</v-icon>
+
+                                        </v-btn>
+
+                                        <v-divider class="mx-4" inset vertical></v-divider>
+
+                                        <v-btn icon
+                                               large
+                                               color="indigo"
+                                               @click="ini_areceber()"
+                                               title="Contas a Receber">
+                                            <v-icon>mdi-cash-plus</v-icon>
+                                        </v-btn>
+
+                                        <v-btn icon
+                                               large
+                                               color="indigo"
+                                               @click="ini_pagar()"
+                                               title="Contas a Pagar">
+                                            <v-icon>mdi-cash-minus</v-icon>
+                                        </v-btn>
+
+                                    </template>
+
+                                    <v-card>
+                                        <v-card-title class="headline white--text indigo lighten-2">
+                                            Pesquisar
+                                            <v-spacer></v-spacer>
+                                            <v-btn small
+                                                   icon
+                                                   color="white"
+                                                   @click="dialog_pesq = false">
+                                                <v-icon>mdi-close</v-icon>
+                                            </v-btn>
+                                        </v-card-title>
+
+                                        <v-card-text>
+                                            <br>
+                                            <v-row>
+                                                <v-col cols="12" sm="6">
+
+                                                    <v-menu v-model="menudataini"
+                                                            :close-on-content-click="false"
+                                                            transition="scale-transition"
+                                                            offset-y
+                                                            max-width="290px"
+                                                            min-width="auto">
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <v-text-field v-model="data_ini"
+                                                                          label="Data início"
+                                                                          outlined
+                                                                          readonly
+                                                                          append-icon="mdi-calendar"
+                                                                          v-bind="attrs"
+                                                                          v-on="on"></v-text-field>
+                                                        </template>
+                                                        <v-date-picker v-model="dateini"
+                                                                       no-title
+                                                                       locale="pt-br"
+                                                                       @input="menudataini = false"></v-date-picker>
+                                                    </v-menu>
+                                                </v-col>
+
+                                                <v-col cols="12" sm="6">
+                                                    <v-menu v-model="menudatafim"
+                                                            :close-on-content-click="false"
+                                                            transition="scale-transition"
+                                                            offset-y
+                                                            max-width="290px"
+                                                            min-width="auto">
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <v-text-field v-model="data_fim"
+                                                                          label="Data fim"
+                                                                          outlined
+                                                                          append-icon="mdi-calendar"
+                                                                          readonly
+                                                                          v-bind="attrs"
+                                                                          v-on="on"></v-text-field>
+                                                        </template>
+                                                        <v-date-picker v-model="datefim"
+                                                                       no-title
+                                                                       locale="pt-br"
+                                                                       @input="menudatafim = false"></v-date-picker>
+                                                    </v-menu>
+                                                </v-col>
+
+                                                <v-col cols="12" sm="12">
+                                                    <v-autocomplete clearable
+                                                                    v-model="funcionario_usu"
+                                                                    :items="items_funcionario_usu"
+                                                                    label="Funcionário" outlined></v-autocomplete>
+                                                </v-col>
+
+
+
+                                            </v-row>
+
+                                        </v-card-text>
+
+                                        <v-divider></v-divider>
+
+                                        <v-card-actions>
+                                            <v-spacer></v-spacer>
+                                            <v-btn color="primary"
+                                                   text
+                                                   @click="pesq()">
+                                                <v-icon left>mdi-magnify</v-icon>
+                                                Pesquisar
+                                            </v-btn>
+                                        </v-card-actions>
+                                    </v-card>
+                                </v-dialog>
+
+
+                            </v-toolbar>
+                        </v-col>
+                    </v-row>
+                </div>
+                <!--dashboard-->
+                <v-form>
+                    <v-container>
+                        <v-row dense justify="center">
+
+                            <v-col class="display-1"
+                                   cols="7" sm="3">
+                                <v-card color="#BBDEFB"
+                                        class="mx-auto"
+                                        max-width="400"
+                                        height="125"
+                                        outlined>
+                                    <v-list-item three-line>
+                                        <v-list-item-content>
+                                            <div class="overline mb-1">
+                                                {{`${titulovendas}`}}
+                                            </div>
+                                            <v-row align="center">
+                                                <v-col class="display-1"
+                                                       cols="12">
+                                                    R${{`${vendas}`}}
+                                                </v-col>
+                                            </v-row>
+                                        </v-list-item-content>
+                                    </v-list-item>
+                                </v-card>
+                            </v-col>
+
+                            <v-col class="display-1"
+                                   cols="7" sm="3">
+                                <v-card color="#C5E1A5"
+                                        class="mx-auto"
+                                        max-width="400"
+                                        height="125"
+                                        outlined>
+                                    <v-list-item three-line>
+                                        <v-list-item-content>
+                                            <div class="overline mb-1">
+                                                {{`${titulolucro}`}}
+                                            </div>
+                                            <v-row align="center">
+                                                <v-col class="display-1"
+                                                       cols="12">
+                                                    R${{`${lucro}`}}
+                                                </v-col>
+                                            </v-row>
+                                        </v-list-item-content>
+                                    </v-list-item>
+                                </v-card>
+
+                            </v-col>
+
+                            <v-col class="display-1"
+                                   cols="7" sm="3">
+                                <v-card color="#E1BEE7"
+                                        class="mx-auto"
+                                        max-width="400"
+                                        height="125"
+                                        outlined>
+                                    <v-list-item three-line>
+                                        <v-list-item-content>
+                                            <div class="overline mb-1">
+                                                {{`${tituloconta_recebe}`}}
+                                            </div>
+                                            <v-row align="center">
+                                                <v-col class="display-1"
+                                                       cols="12">
+                                                    R${{`${conta_recebe}`}}
+                                                </v-col>
+                                            </v-row>
+                                        </v-list-item-content>
+                                    </v-list-item>
+                                </v-card>
+
+                            </v-col>
+                        </v-row>
+
+                        <v-row dense justify="center">
+                            <v-col class="display-1"
+                                   cols="7" sm="3">
+                                <v-card color="#FFF59D"
+                                        class="mx-auto"
+                                        max-width="400"
+                                        height="125"
+                                        outlined>
+                                    <v-list-item three-line>
+                                        <v-list-item-content>
+                                            <div class="overline mb-1">
+                                                {{`${titulocomissao}`}}
+                                            </div>
+                                            <v-row align="center">
+                                                <v-col class="display-1"
+                                                       cols="12">
+                                                    R${{`${comissao}`}}
+                                                </v-col>
+                                            </v-row>
+                                        </v-list-item-content>
+                                    </v-list-item>
+                                </v-card>
+                            </v-col>
+                            <v-col class="display-1" cols="7" sm="3">
+                                <v-card color="#EF9A9A"
+                                        class="mx-auto"
+                                        max-width="400"
+                                        height="125"
+                                        outlined>
+                                    <v-list-item three-line>
+                                        <v-list-item-content>
+                                            <div class="overline mb-1">
+                                                {{`${tituloconta_pagar}`}}
+                                            </div>
+                                            <v-row align="center">
+                                                <v-col class="display-1"
+                                                       cols="12">
+                                                    R${{`${conta_pagar}`}}
+                                                </v-col>
+                                            </v-row>
+                                        </v-list-item-content>
+                                    </v-list-item>
+                                </v-card>
+                            </v-col>
+                            <v-col class="display-1" cols="7" sm="3">
+                                <v-card color="#FF8A65"
+                                        class="mx-auto"
+                                        max-width="400"
+                                        height="125"
+                                        outlined>
+                                    <v-list-item three-line>
+                                        <v-list-item-content>
+                                            <div class="overline mb-1">
+                                                VALOR DO ESTOQUE
+                                            </div>
+                                            <v-row align="center">
+                                                <v-col class="display-1"
+                                                       cols="12">
+                                                    R${{`${valor_estoque}`}}
+                                                </v-col>
+                                            </v-row>
+                                        </v-list-item-content>
+                                    </v-list-item>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </v-form>
+            </v-card>
+        </v-app>
+    </div>
+
+    <script>
+        Vue.use(VueMask.VueMaskPlugin);
+        new Vue({
+            el: '#app',
+            vuetify: new Vuetify(),
+            data: vm => ({
+                url: 'https://softenter.com.br',
+                lucro: '',
+                vendas: '',
+                valor_estoque: '',
+                cliente: '',
+                disabled_parcela_pagar: false,
+                descricao_pagar: '',
+                status: '',
+                status_pagar: '',
+                items_status: ['Todos', 'pago', 'A receber', 'Vencidos'],
+                items_status_pagar: ['Todos', 'Pago', 'A pagar', 'Vencidos'],
+                carregando: false,
+                comissao: '',
+                funcionario_usu: sessionStorage.usuario_nome,
+                titulocomissao: '',
+                tituloconta_recebe: '',
+                tituloconta_pagar: '',
+                conta_pagar: '',
+                conta_recebe: '',
+                items_funcionario_usu: [],
+                titulolucro: '',
+                titulovendas: '',
+                dialog_areceber: false,
+                dialog_pagar: false,
+                dialog_pesq: false,
+                dialog_pesq_areceber: false,
+                dialog_pesq_pagar: false,
+                dateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
+                dateini: new Date().toLocaleDateString().substr(6, 4) + '-' + new Date().toLocaleDateString().substr(3, 2) + '-' + new Date().toLocaleDateString().substr(0, 2),
+                menudataini: false,
+                menudata_vencimento: false,
+                menudata_data_pagamento_pagar: false,
+                menudata_vencimento_pagar: false,
+                menudata_venc_ini: false,
+                menudata_venc_ini_pagar: false,
+                menudata_pag_ini: false,
+                menudata_pag_ini_pagar: false,
+                menudata_pag_fim: false,
+                menudata_pag_fim_pagar: false,
+                menudata_venc_fim: false,
+                menudata_venc_fim_pagar: false,
+                date_venc_fim: '',// new Date().toLocaleDateString().substr(6, 4) + '-' + new Date().toLocaleDateString().substr(3, 2) + '-' + new Date().toLocaleDateString().substr(0, 2),
+                date_venc_fim_pagar: '',// new Date().toLocaleDateString().substr(6, 4) + '-' + new Date().toLocaleDateString().substr(3, 2) + '-' + new Date().toLocaleDateString().substr(0, 2),
+                date_venc_ini: '',//new Date().toLocaleDateString().substr(6, 4) + '-' + new Date().toLocaleDateString().substr(3, 2) + '-' + new Date().toLocaleDateString().substr(0, 2),
+                date_venc_ini_pagar: '',// new Date().toLocaleDateString().substr(6, 4) + '-' + new Date().toLocaleDateString().substr(3, 2) + '-' + new Date().toLocaleDateString().substr(0, 2),
+                date_pag_ini: '',//new Date().toLocaleDateString().substr(6, 4) + '-' + new Date().toLocaleDateString().substr(3, 2) + '-' + new Date().toLocaleDateString().substr(0, 2),
+                date_pag_ini_pagar: '',//new Date().toLocaleDateString().substr(6, 4) + '-' + new Date().toLocaleDateString().substr(3, 2) + '-' + new Date().toLocaleDateString().substr(0, 2),
+                date_pag_fim: '',//new Date().toLocaleDateString().substr(6, 4) + '-' + new Date().toLocaleDateString().substr(3, 2) + '-' + new Date().toLocaleDateString().substr(0, 2),
+                date_pag_fim_pagar: '',//new Date().toLocaleDateString().substr(6, 4) + '-' + new Date().toLocaleDateString().substr(3, 2) + '-' + new Date().toLocaleDateString().substr(0, 2),
+                exib_erro: false,
+                date_vencimento: '',//new Date().toLocaleDateString().substr(6, 4) + '-' + new Date().toLocaleDateString().substr(3, 2) + '-' + new Date().toLocaleDateString().substr(0, 2),
+                date_vencimento_pagar: '',//new Date().toLocaleDateString().substr(6, 4) + '-' + new Date().toLocaleDateString().substr(3, 2) + '-' + new Date().toLocaleDateString().substr(0, 2),
+                date_data_pagamento_pagar: '',//new Date().toLocaleDateString().substr(6, 4) + '-' + new Date().toLocaleDateString().substr(3, 2) + '-' + new Date().toLocaleDateString().substr(0, 2),
+                datefim: new Date().toLocaleDateString().substr(6, 4) + '-' + new Date().toLocaleDateString().substr(3, 2) + '-' + new Date().toLocaleDateString().substr(0, 2),
+                menudatafim: false,
+                data_ini: new Date().toLocaleDateString(),
+                data_fim: new Date().toLocaleDateString(),
+                venc_ini: '',//new Date().toLocaleDateString(),
+                venc_ini_pagar: '',
+                venc_fim: '',//new Date().toLocaleDateString(),
+                venc_fim_pagar: '',
+                pag_ini: '',
+                pesquisar_pagar: false,
+                pesquisar_areceber: false,
+                pag_ini_pagar: '',
+                pag_fim: '',
+                pag_fim_pagar: '',
+                show1: false,
+                usuario: '',
+                total_conta_pagar: 0,
+                total_conta_receber: 0,
+                password: '',
+                dialog_login: true,
+                dialog_areceber_edt: false,
+                dialog_pagar_edt: false,
+                snackbar: false,
+                text_aviso: '',
+                cor_aviso: "success",
+                icon: 'mdi-check-circle',
+                drawer: false,
+                group: null,
+                headers_areceber: [
+                    { text: 'Status', value: 'status_desc' },
+                    { text: 'vencimento', value: 'vencimento' },
+                    { text: 'parcelas', value: 'parcela' },
+                    { text: 'cliente', value: 'cliente' },
+                    { text: 'valor', value: 'valor' },
+                    { text: 'Editar/deletar', align: 'center', value: 'actions', sortable: false },
+
+                ],
+                headers_pagar: [
+                    { text: 'Status', value: 'status_desc' },
+                    { text: 'vencimento', value: 'vencimento' },
+                    { text: 'parcelas', value: 'parcela' },
+                    { text: 'Descrição', value: 'descricao' },
+                    { text: 'valor', value: 'valor' },
+                    { text: 'Editar/deletar', align: 'center', value: 'actions', sortable: false },
+
+                ],
+                desserts_areceber: [],
+                desserts_pagar: [],
+                editedIndex_areceber: -1,
+                editedIndex_pagar: -1,
+                editedItem_areceber: {
+                    id: '',
+                    parcela: '',
+                    vencimento: '',
+                    cliente: '',
+                    valor: '',
+                    fk_empresa: '',
+                    fk_pedido: '',
+                    data_pagamento: '',
+                    pago: '',
+                    custo: '',
+                },
+                defaultItem_areceber: {
+                    id: '',
+                    parcela: '',
+                    vencimento: '',
+                    cliente: '',
+                    valor: '',
+                    fk_empresa: '',
+                    fk_pedido: '',
+                    data_pagamento: '',
+                    pago: '',
+                    custo: '',
+                },
+                editedItem_pagar: {
+                    id: '',
+                    parcela: '',
+                    vencimento: new Date().toLocaleDateString(),
+                    descricao: '',
+                    valor: '',
+                    fk_empresa: '',
+                    data_pagamento: '',
+                    pago: '',
+                },
+                defaultItem_pagar: {
+                    id: '',
+                    parcela: '',
+                    vencimento: new Date().toLocaleDateString(),
+                    descricao: '',
+                    valor: '',
+                    fk_empresa: '',
+                    data_pagamento: '',
+                    pago: '',
+                },
+            }),
+
+            computed: {
+
+                formTitle() {
+                    return this.editedIndex_areceber === -1 ? 'Novo' : 'Editar'
+
+                    return this.editedIndex_pagar === -1 ? 'Novo' : 'Editar'
+                }
+            },
+
+            watch: {
+                dialog(val) {
+                    val || this.close()
+                },
+                dialog_pagar_edt(val) {
+                    if (this.editedIndex_pagar == -1) {
+                        this.disabled_parcela_pagar = false
+                        this.editedItem_pagar.parcela = '1';
+                    } else {
+                        this.disabled_parcela_pagar = true
+                    }
+                    val || this.close_conta_pagar()
+                },
+                dialog_pesq_areceber(val) {
+                    this.status = 'Todos'
+                    val || this.close()
+                },
+                dialog_pesq_pagar(val) {
+                    this.status_pagar = 'Todos'
+                    val || this.close_conta_pagar()
+                },
+                dialogDelete(val) {
+                    val || this.closeDelete()
+                },
+                dateini(val) {
+                    this.data_ini = this.formatDate(this.dateini)
+                },
+                datefim(val) {
+                    this.data_fim = this.formatDate(this.datefim)
+                },
+                date_vencimento(val) {
+                    this.editedItem_areceber.vencimento = this.formatDate(this.date_vencimento)
+                },
+                date_vencimento_pagar(val) {
+                    this.editedItem_pagar.vencimento = this.formatDate(this.date_vencimento_pagar)
+                },
+                date_data_pagamento_pagar(val) {
+                    this.editedItem_pagar.data_pagamento = this.formatDate(this.date_data_pagamento_pagar)
+                },
+                date_venc_ini(val) {
+                    this.venc_ini = this.formatDate(this.date_venc_ini)
+                },
+                date_venc_fim(val) {
+                    this.venc_fim = this.formatDate(this.date_venc_fim)
+                },
+                date_pag_ini(val) {
+                    this.pag_ini = this.formatDate(this.date_pag_ini)
+                },
+                date_pag_fim(val) {
+                    this.pag_fim = this.formatDate(this.date_pag_fim)
+                },
+                date_venc_ini_pagar(val) {
+                    this.venc_ini_pagar = this.formatDate(this.date_venc_ini_pagar)
+                },
+                date_venc_fim_pagar(val) {
+                    this.venc_fim_pagar = this.formatDate(this.date_venc_fim_pagar)
+                },
+                date_pag_ini_pagar(val) {
+                    this.pag_ini_pagar = this.formatDate(this.date_pag_ini_pagar)
+                },
+                date_pag_fim_pagar(val) {
+                    this.pag_fim_pagar = this.formatDate(this.date_pag_fim_pagar)
+                },
+            },
+
+            created() {
+                this.initialize()
+                this.info_empresa()
+
+                if (sessionStorage.login_ativo != 'true') {
+                    window.location.href = this.url + "/login.html";
+                }
+                if (sessionStorage.usuadm == '0') {
+                    this.disabled_sem_perm = true
+                }
+            },
+
+            methods: {
+
+                async save_contareceber() {
+
+                    try {
+                        data_vencimento = this.editedItem_areceber.vencimento
+                        dia = data_vencimento.slice(0, 2);
+                        mes = data_vencimento.slice(3, 5);
+                        ano = data_vencimento.slice(6, 10);
+                        data_vencimento = ano + "-" + mes + "-" + dia
+
+                        if (this.editedItem_areceber.pago == true) {
+                            pago = 1
+                            if (this.editedItem_pagar.data_pagamento == '') {
+                                data_pagamento = new Date().getFullYear().toString() + '-' + (new Date().getMonth() + 1).toString() + '-' + new Date().getDate().toString()
+                            } else {
+                                data_pagamento = this.editedItem_pagar.data_pagamento
+                                dia = data_pagamento.slice(0, 2);
+                                mes = data_pagamento.slice(3, 5);
+                                ano = data_pagamento.slice(6, 10);
+                                data_pagamento = ano + "-" + mes + "-" + dia
+
+                            }
+                        } else {
+                            pago = 0
+                            data_pagamento = ''
+                        }
+
+                        if (parseFloat(this.editedItem_areceber.valor.toString().replaceAll(",", "").replaceAll(".", "").length) > 5) {
+                            this.editedItem_areceber.valor = this.editedItem_areceber.valor.toString().replace(".", "");
+                        }
+                        this.editedItem_areceber.valor = this.editedItem_areceber.valor.toString().replace(",", ".");
+
+
+
+                        salvar_resq = await axios.post(this.url + '/api/Contas_receber/Contas_receber/alterar?id=' + this.editedItem_areceber.id + '&fk_empresa=' + sessionStorage.id_empresalogado + '&valor=' + this.editedItem_areceber.valor + '&vencimento=' + data_vencimento + '&pago=' + pago + '&data_pagamento=' + data_pagamento)
+
+                        this.snackbar = true
+                        this.text_aviso = 'Salvo com sucesso !'
+                        this.cor_aviso = "success"
+                        this.icon = "mdi-mdi-check-circle"
+
+                        this.dialog_areceber_edt = false
+
+                        if (this.venc_ini != '' || this.venc_fim != '' || this.pag_ini != '' || this.pag_fim != '' || this.status != '' || this.cliente != '') {
+                            this.pesq_areceber()
+                        } else {
+                            this.ini_areceber()
+                        }
+
+                    } catch (err) {
+                        alert("Erro: " + err.message);
+                    }
+                },
+
+                async save_conta_pagar() {
+
+                    if (this.editedItem_pagar.descricao == "" || this.editedItem_pagar.parcela == "" || this.editedItem_pagar.valor == "") {
+                        this.exib_erro = true
+                    } else {
+                        try {
+                            data_vencimento = this.editedItem_pagar.vencimento
+                            dia = data_vencimento.slice(0, 2);
+                            mes = data_vencimento.slice(3, 5);
+                            ano = data_vencimento.slice(6, 10);
+                            data_vencimento = ano + "-" + mes + "-" + dia
+
+                            if (this.editedItem_pagar.pago == true) {
+                                pago = 1
+                                if (this.editedItem_pagar.data_pagamento == '') {
+                                    data_pagamento = new Date().getFullYear().toString() + '-' + (new Date().getMonth() + 1).toString() + '-' + new Date().getDate().toString()
+                                } else {
+                                    data_pagamento = this.editedItem_pagar.data_pagamento
+                                    dia = data_pagamento.slice(0, 2);
+                                    mes = data_pagamento.slice(3, 5);
+                                    ano = data_pagamento.slice(6, 10);
+                                    data_pagamento = ano + "-" + mes + "-" + dia
+
+                                }
+                            } else {
+                                pago = 0
+                                data_pagamento = 'null'
+                            }
+
+                            if (parseFloat(this.editedItem_pagar.valor.toString().replaceAll(",", "").replaceAll(".", "").length) > 5) {
+                                this.editedItem_pagar.valor = this.editedItem_pagar.valor.toString().replace(".", "");
+                            }
+                            this.editedItem_pagar.valor = this.editedItem_pagar.valor.toString().replace(",", ".");
+
+                            if (this.editedIndex_pagar > -1) {
+                                salvar_resq = await axios.post(this.url + '/api/Contas_pagar/Contas_pagar/alterar?pago=' + pago + '&data_pagamento=' + data_pagamento + '&descricao=' + this.editedItem_pagar.descricao + '&vencimento=' + data_vencimento + '&valor=' + this.editedItem_pagar.valor + '&fk_empresa=' + sessionStorage.id_empresalogado + '&id=' + this.editedItem_pagar.id)
+                            } else {
+                                if (!isNaN(this.editedItem_pagar.parcela) == false) {
+                                    this.exib_erro = true
+                                    return
+                                }
+                                //data_vencimento = new Date(data_vencimento).getFullYear() + "-" + ((new Date(data_vencimento).getMonth() + 1)) + "-" + (new Date(data_vencimento).getDate() + 1)
+                                for (i = 1; i <= parseFloat(this.editedItem_pagar.parcela); i++) {
+
+                                    salvar_resq = await axios.post(this.url + '/api/Contas_pagar/Contas_pagar/salvar?pago=' + pago + '&data_pagamento=' + data_pagamento + '&descricao=' + this.editedItem_pagar.descricao + '&vencimento=' + data_vencimento + '&parcela=' + i + '/' + this.editedItem_pagar.parcela + '&valor=' + parseFloat(this.editedItem_pagar.valor) / parseFloat(this.editedItem_pagar.parcela) + '&fk_empresa=' + sessionStorage.id_empresalogado)
+
+                                    pago = 0
+                                    data_vencimento = new Date(data_vencimento).getFullYear() + "-" + ((new Date(data_vencimento).getMonth() + 2)) + "-" + (new Date(data_vencimento).getDate())
+                                }
+                            }
+
+                            this.snackbar = true
+                            this.text_aviso = 'Salvo com sucesso !'
+                            this.cor_aviso = "success"
+                            this.icon = "mdi-mdi-check-circle"
+
+                            this.dialog_pagar_edt = false
+
+                            if (this.venc_ini_pagar != '' || this.venc_fim_pagar != '' || this.pag_ini_pagar != '' || this.pag_fim_pagar != '' || this.status_pagar != '' || this.descricao_pagar != '') {
+                                this.pesq_pagar()
+                            } else {
+                                this.ini_pagar()
+                            }
+
+
+
+
+                        } catch (err) {
+                            alert("Erro: " + err.message);
+                        }
+                    }
+                },
+
+
+
+                async ini_pagar() {
+                    soma_total_conta_pagar = 0
+                    this.dialog_pagar = true
+                    listar_contas = await axios.get(this.url + '/api/Contas_pagar/Contas_pagar/todos?fk_empresa=' + sessionStorage.id_empresalogado)
+
+                    this.desserts_pagar = []
+
+                    for (i = 0; i < listar_contas.data.length; i++) {
+
+                        if (listar_contas.data[i].pago == 1) {
+                            status_desc = 'pago'
+                        } else if (listar_contas.data[i].pago != 1 && new Date(listar_contas.data[i].vencimento.slice(3, 5) + '/' + listar_contas.data[i].vencimento.slice(0, 2) + '/' + listar_contas.data[i].vencimento.slice(6, 10)) < new Date()) {
+                            status_desc = 'Vencido'
+                        } else {
+                            status_desc = 'A pagar'
+                        }
+
+                        this.desserts_pagar.push(
+                            {
+                                id: listar_contas.data[i].id,
+                                descricao: listar_contas.data[i].descricao,
+                                parcela: listar_contas.data[i].parcela,
+                                status_desc: status_desc,
+                                vencimento: listar_contas.data[i].vencimento.slice(0, 10),
+                                valor: listar_contas.data[i].valor,
+                                fk_empresa: listar_contas.data[i].fk_empresa,
+                                data_pagamento: listar_contas.data[i].data_pagamento.slice(0, 10),
+                                pago: listar_contas.data[i].pago,
+                            })
+
+                        valor_pagar = listar_contas.data[i].valor
+
+                        if (parseFloat(valor_pagar.toString().replaceAll(",", "").replaceAll(".", "").length) > 5) {
+                            valor_pagar = valor_pagar.toString().replace(".", "");
+                        }
+                        valor_pagar = valor_pagar.toString().replace(",", ".");
+
+                        soma_total_conta_pagar = parseFloat(soma_total_conta_pagar) + parseFloat(valor_pagar)
+
+                    }
+                    this.total_conta_pagar = soma_total_conta_pagar.toLocaleString('pt-br', { minimumFractionDigits: 2 })
+                },
+
+                async ini_areceber() {
+                    this.dialog_areceber = true
+                    soma_total_conta_receber = 0
+                    listar_contas = await axios.get(this.url + '/api/Contas_receber/Contas_receber/todos?fk_empresa=' + sessionStorage.id_empresalogado)
+
+                    this.desserts_areceber = []
+
+                    for (i = 0; i < listar_contas.data.length; i++) {
+
+                        if (listar_contas.data[i].pago == 1) {
+                            status_desc = 'Pago'
+                        } else if (listar_contas.data[i].pago != 1 && new Date(listar_contas.data[i].vencimento.slice(3, 5) + '/' + listar_contas.data[i].vencimento.slice(0, 2) + '/' + listar_contas.data[i].vencimento.slice(6, 10)) < new Date()) {
+                            status_desc = 'Vencido'
+                        } else {
+                            status_desc = 'A receber'
+                        }
+
+                        this.desserts_areceber.push(
+                            {
+                                id: listar_contas.data[i].id,
+                                parcela: listar_contas.data[i].parcela,
+                                status_desc: status_desc,
+                                vencimento: listar_contas.data[i].vencimento.slice(0, 10),
+                                cliente: listar_contas.data[i].cliente,
+                                valor: listar_contas.data[i].valor,
+                                fk_empresa: listar_contas.data[i].fk_empresa,
+                                fk_pedido: listar_contas.data[i].fk_pedido,
+                                data_pagamento: listar_contas.data[i].data_pagamento.slice(0, 10),
+                                pago: listar_contas.data[i].pago,
+                                custo: listar_contas.data[i].custo,
+                            })
+
+                        valor_receber = listar_contas.data[i].valor
+
+                        if (parseFloat(valor_receber.toString().replaceAll(",", "").replaceAll(".", "").length) > 5) {
+                            valor_receber = valor_receber.toString().replace(".", "");
+                        }
+                        valor_receber = valor_receber.toString().replace(",", ".");
+
+                        soma_total_conta_receber = parseFloat(soma_total_conta_receber) + parseFloat(valor_receber)
+                    }
+                    this.total_conta_receber = soma_total_conta_receber.toLocaleString('pt-br', { minimumFractionDigits: 2 })
+
+                },
+
+                async pesq_areceber() {
+
+                    this.pesquisar_areceber = true
+
+                    listar_contas = await axios.get(this.url + '/api/Contas_receber/Contas_receber/pesq?fk_empresa=' + sessionStorage.id_empresalogado + '&datavenci_ini=' + this.venc_ini + '&datavenci_fim=' + this.venc_fim + '&datapag_ini=' + this.pag_ini + '&datapag_fim=' + this.pag_fim + '&status=' + this.status + '&cliente=' + this.cliente)
+
+                    this.desserts_areceber = []
+                    soma_total_conta_receber = 0
+                    for (i = 0; i < listar_contas.data.length; i++) {
+
+                        if (listar_contas.data[i].pago == 1) {
+                            status_desc = 'Pago'
+                        } else if (listar_contas.data[i].pago != 1 && new Date(listar_contas.data[i].vencimento.slice(3, 5) + '/' + listar_contas.data[i].vencimento.slice(0, 2) + '/' + listar_contas.data[i].vencimento.slice(6, 10)) < new Date()) {
+                            status_desc = 'Vencido'
+                        } else {
+                            status_desc = 'A receber'
+                        }
+
+                        this.desserts_areceber.push(
+                            {
+                                id: listar_contas.data[i].id,
+                                parcela: listar_contas.data[i].parcela,
+                                status_desc: status_desc,
+                                vencimento: listar_contas.data[i].vencimento.slice(0, 10),
+                                cliente: listar_contas.data[i].cliente,
+                                valor: listar_contas.data[i].valor,
+                                fk_empresa: listar_contas.data[i].fk_empresa,
+                                fk_pedido: listar_contas.data[i].fk_pedido,
+                                data_pagamento: listar_contas.data[i].data_pagamento.slice(0, 10),
+                                pago: listar_contas.data[i].pago,
+                                custo: listar_contas.data[i].custo,
+                            })
+                        valor_receber = listar_contas.data[i].valor
+
+                        if (parseFloat(valor_receber.toString().replaceAll(",", "").replaceAll(".", "").length) > 5) {
+                            valor_receber = valor_receber.toString().replace(".", "");
+                        }
+                        valor_receber = valor_receber.toString().replace(",", ".");
+
+                        soma_total_conta_receber = parseFloat(soma_total_conta_receber) + parseFloat(valor_receber)
+                    }
+                    this.total_conta_receber = soma_total_conta_receber.toLocaleString('pt-br', { minimumFractionDigits: 2 })
+
+                    aux_status = this.status
+
+                    this.dialog_pesq_areceber = false
+                },
+
+                async pesq_pagar() {
+
+                    this.pesquisar_pagar = true
+
+                    listar_contas = await axios.get(this.url + '/api/Contas_pagar/Contas_pagar/pesq?fk_empresa=' + sessionStorage.id_empresalogado + '&datavenci_ini=' + this.venc_ini_pagar + '&datavenci_fim=' + this.venc_fim_pagar + '&datapag_ini=' + this.pag_ini_pagar + '&datapag_fim=' + this.pag_fim_pagar + '&status=' + this.status_pagar + '&descricao=' + this.descricao_pagar)
+
+                    this.desserts_pagar = []
+                    soma_total_conta_pagar = 0
+                    for (i = 0; i < listar_contas.data.length; i++) {
+
+                        if (listar_contas.data[i].pago == 1) {
+                            status_desc = 'Pago'
+                        } else if (listar_contas.data[i].pago != 1 && new Date(listar_contas.data[i].vencimento.slice(3, 5) + '/' + listar_contas.data[i].vencimento.slice(0, 2) + '/' + listar_contas.data[i].vencimento.slice(6, 10)) < new Date()) {
+                            status_desc = 'Vencido'
+                        } else {
+                            status_desc = 'A pagar'
+                        }
+
+                        this.desserts_pagar.push(
+                            {
+                                id: listar_contas.data[i].id,
+                                descricao: listar_contas.data[i].descricao,
+                                parcela: listar_contas.data[i].parcela,
+                                status_desc: status_desc,
+                                vencimento: listar_contas.data[i].vencimento.slice(0, 10),
+                                valor: listar_contas.data[i].valor,
+                                fk_empresa: listar_contas.data[i].fk_empresa,
+                                data_pagamento: listar_contas.data[i].data_pagamento.slice(0, 10),
+                                pago: listar_contas.data[i].pago,
+                            })
+                        valor_pagar = listar_contas.data[i].valor
+
+                        if (parseFloat(valor_pagar.toString().replaceAll(",", "").replaceAll(".", "").length) > 5) {
+                            valor_pagar = valor_pagar.toString().replace(".", "");
+                        }
+                        valor_pagar = valor_pagar.toString().replace(",", ".");
+
+                        soma_total_conta_pagar = parseFloat(soma_total_conta_pagar) + parseFloat(valor_pagar)
+
+                    }
+                    this.total_conta_pagar = soma_total_conta_pagar.toLocaleString('pt-br', { minimumFractionDigits: 2 })
+
+                    aux_status_pagar = this.status_pagar
+
+                    this.dialog_pesq_pagar = false
+
+                },
+
+                getColor(status_desc) {
+                    if (status_desc == 'Pago') return 'green'
+                    else if (status_desc == 'A receber') return 'yellow'
+                    else if (status_desc == 'A pagar') return 'yellow'
+                    else if (status_desc == 'Vencido') return 'red'
+
+                },
+
+                textColor(status_desc) {
+                    if (status_desc == 'Pago') return 'white'
+                    else if (status_desc == 'A receber') return '#757575'
+                    else if (status_desc == 'A pagar') return '#757575'
+                    else if (status_desc == 'Vencido') return 'White'
+                },
+
+                async editItem(item) {
+
+                    this.editedIndex = this.desserts_areceber.indexOf(item)
+                    this.editedItem_areceber = Object.assign({}, item)
+
+                    if (this.editedItem_areceber.pago == '1') {
+                        this.editedItem_areceber.pago = true
+                    } else {
+                        this.editedItem_areceber.pago = false
+                    }
+
+                    this.dialog_areceber_edt = true
+
+                },
+
+                async editItem_pagar(item) {
+
+                    this.editedIndex_pagar = this.desserts_pagar.indexOf(item)
+                    this.editedItem_pagar = Object.assign({}, item)
+
+                    if (this.editedItem_pagar.pago == '1') {
+                        this.editedItem_pagar.pago = true
+                    } else {
+                        this.editedItem_pagar.pago = false
+                    }
+
+                    this.dialog_pagar_edt = true
+
+                },
+
+                deleteItem_areceber(item) {
+                    //const index = this.desserts_areceber.indexOf(item)
+                    mensagem = confirm('Deseja deletar o registro ? (esta ação é permanente ! )') //&& this.desserts_areceber.splice(index, 1)
+
+                    if (mensagem != false) {
+
+                        axios.delete(this.url + '/api/Contas_receber/Contas_receber/deletar?id=' + item.id + '&fk_empresa=' + sessionStorage.id_empresalogado)
+
+                        if (this.venc_ini != '' || this.venc_fim != '' || this.pag_ini_pagar != '' || this.pag_fim != '' || this.status != '' || this.cliente != '') {
+                            this.pesq_areceber()
+                        } else {
+                            this.ini_areceber()
+                        }
+
+                    }
+                },
+
+                deleteItem_pagar(item) {
+                    //const index = this.desserts_areceber.indexOf(item)
+                    mensagem = confirm('Deseja deletar o registro ? (esta ação é permanente ! )') //&& this.desserts_areceber.splice(index, 1)
+
+                    if (mensagem != false) {
+
+                        axios.delete(this.url + '/api/Contas_pagar/Contas_pagar/deletar?id=' + item.id + '&fk_empresa=' + sessionStorage.id_empresalogado)
+
+                        if (this.venc_ini_pagar != '' || this.venc_fim_pagar != '' || this.pag_ini_pagar != '' || this.pag_fim_pagar != '' || this.status_pagar != '' || this.descricao_pagar != '') {
+                            this.pesq_pagar()
+                        } else {
+                            this.ini_pagar()
+                        }
+                    }
+                },
+
+                close() {
+                    if (this.pesquisar_areceber == false) {
+                        this.status = ''
+                    } else {
+                        this.status = aux_status
+                    }
+
+                    this.dialog_areceber_edt = false
+                    this.$nextTick(() => {
+                        this.editedItem = Object.assign({}, this.defaultItem)
+                        this.editedIndex = -1
+                    })
+                },
+
+                close_conta_pagar() {
+                    if (this.pesquisar_pagar == false) {
+                        this.status_pagar = ''
+                    } else {
+                        this.status_pagar = aux_status_pagar
+                    }
+
+                    this.dialog_pagar_edt = false
+                    this.exib_erro = false
+                    this.$nextTick(() => {
+                        this.editedItem_pagar = Object.assign({}, this.defaultItem_pagar)
+                        this.editedIndex_pagar = -1
+                    })
+                },
+
+                closeDelete() {
+                    this.dialogDelete_prod = false
+                    this.$nextTick(() => {
+                        this.editedItem_prod = Object.assign({}, this.defaultItem_prod)
+                        this.editedIndex_prod = -1
+                    })
+                },
+
+
+
+                info_empresa() {
+                    this.nome_empresa = sessionStorage.nome_empresa
+                    this.funcionario = sessionStorage.usuario_nome
+                },
+
+                formatDate(date) {
+                    if (!date) return null
+
+                    const [year, month, day] = date.split('-')
+                    return `${day}/${month}/${year}`
+                },
+
+                async initialize() {
+
+                    items_funcionario_usu = []
+                    listar_func = await axios.get(this.url + '/api/funcionarios/listar/funcionarios?fk_empresa=' + sessionStorage.id_empresalogado)
+                    for (var i = 0; i < listar_func.data.length; i++) {
+                        this.items_funcionario_usu.push(listar_func.data[i].usuario)
+                    }
+
+                    meses = [
+                        "Janeiro",
+                        "Fevereiro",
+                        "Março",
+                        "Abril",
+                        "Maio",
+                        "Junho",
+                        "Julho",
+                        "Agosto",
+                        "Setembro",
+                        "Outubro",
+                        "Novembro",
+                        "Dezembro"
+                    ];
+
+                    listar_lucro = await axios.get(this.url + '/api/financeiro/financeiro/mes?empresa=' + sessionStorage.id_empresalogado)
+                    listar_conta_recebe = await axios.get(this.url + '/api/financeiro/conta_receber/mes?empresa=' + sessionStorage.id_empresalogado)
+                    listar_conta_pagar = await axios.get(this.url + '/api/financeiro/conta_pagar/mes?empresa=' + sessionStorage.id_empresalogado)
+                    listar_valor_estoque = await axios.get(this.url + '/api/produtos/listar/valor_estoque?fk_empresa=' + sessionStorage.id_empresalogado)
+
+                    lucro_conta = listar_conta_recebe.data[0].lucro_conta.replace(",", ".")
+                    valor_comissao_conta = listar_conta_recebe.data[0].valor_comissao.replace(",", ".")
+
+                    if (valor_comissao_conta == '') {
+                        valor_comissao_conta = 0
+                    }
+                    if (lucro_conta == '') {
+                        lucro_conta = 0
+                    }
+
+                    comissao = listar_lucro.data[0].valor_comissao.replace(",", ".")
+                    lucro = listar_lucro.data[0].lucro.replace(",", ".")
+
+                    lucro = parseFloat(lucro) + parseFloat(lucro_conta)
+                    comissao = parseFloat(comissao) + parseFloat(valor_comissao_conta)
+
+                    if (listar_valor_estoque.data[0].valor_estoque == '' || listar_valor_estoque.data[0].valor_estoque == 'NaN') {
+                        this.valor_estoque = '0.00'
+                    } else {
+                        this.valor_estoque = listar_valor_estoque.data[0].valor_estoque
+                    }
+
+                    this.lucro = parseFloat(lucro.toFixed(2)).toLocaleString('pt-br', { minimumFractionDigits: 2 });
+                    this.vendas = parseFloat(parseFloat(listar_lucro.data[0].vendas.replace(",", ".")).toFixed(2)).toLocaleString('pt-br', { minimumFractionDigits: 2 });
+                    this.comissao = parseFloat(comissao.toFixed(2)).toLocaleString('pt-br', { minimumFractionDigits: 2 });
+                    this.conta_recebe = parseFloat(parseFloat(listar_conta_recebe.data[0].valor_conta.replace(",", ".")).toFixed(2)).toLocaleString('pt-br', { minimumFractionDigits: 2 });
+                    this.conta_pagar = parseFloat(parseFloat(listar_conta_pagar.data[0].valor_conta.replace(",", ".")).toFixed(2)).toLocaleString('pt-br', { minimumFractionDigits: 2 });
+
+                    this.titulolucro = 'LUCRO (' + meses[new Date().getMonth()] + ')'
+                    this.titulovendas = 'VENDAS À VISTA (' + meses[new Date().getMonth()] + ')'
+                    this.tituloconta_recebe = 'CONTAS RECEBIDAS (' + meses[new Date().getMonth()] + ')'
+                    this.tituloconta_pagar = 'CONTAS PAGAS (' + meses[new Date().getMonth()] + ')'
+                    this.titulocomissao = 'comissão a pagar (' + meses[new Date().getMonth()] + ')'
+
+                    if (this.conta_recebe == '' || this.conta_recebe == 'NaN') {
+                        this.conta_recebe = '0.00'
+                    }
+                    if (this.conta_pagar == '' || this.conta_pagar == 'NaN') {
+                        this.conta_pagar = '0.00'
+                    }
+                    if (this.lucro == '' || this.lucro == 'NaN') {
+                        this.lucro = '0.00'
+                    }
+                    if (this.vendas == '' || this.vendas == 'NaN') {
+                        this.vendas = '0.00'
+                    }
+                    if (this.comissao == '' || this.comissao == 'NaN') {
+                        this.comissao = '0.00'
+                    }
+
+                },
+
+                async pesq() {
+                    if (this.funcionario_usu == null) {
+                        this.funcionario_usu = ''
+                    }
+                    listar_lucro = await axios.get(this.url + '/api/financeiro/financeiro/mes_pesq?Inicio=' + this.data_ini + '&Fim=' + this.data_fim + '&usuario=' + this.funcionario_usu + '&empresa=' + sessionStorage.id_empresalogado)
+                    listar_conta_recebe = await axios.get(this.url + '/api/financeiro/conta_receber/mes_pesq?Inicio=' + this.data_ini + '&Fim=' + this.data_fim + '&usuario=' + this.funcionario_usu + '&empresa=' + sessionStorage.id_empresalogado)
+                    listar_conta_pagar = await axios.get(this.url + '/api/financeiro/conta_pagar/mes_pesq?Inicio=' + this.data_ini + '&Fim=' + this.data_fim + '&empresa=' + sessionStorage.id_empresalogado)
+
+                    lucro_conta = listar_conta_recebe.data[0].lucro_conta.replace(",", ".")
+                    valor_comissao_conta = listar_conta_recebe.data[0].valor_comissao.replace(",", ".")
+
+                    if (valor_comissao_conta == '') {
+                        valor_comissao_conta = 0
+                    }
+                    if (lucro_conta == '') {
+                        lucro_conta = 0
+                    }
+
+                    comissao = listar_lucro.data[0].valor_comissao.replace(",", ".")
+                    lucro = listar_lucro.data[0].lucro.replace(",", ".")
+
+                    lucro = parseFloat(lucro) + parseFloat(lucro_conta)
+                    comissao = parseFloat(comissao) + parseFloat(valor_comissao_conta)
+
+                    this.lucro = parseFloat(lucro.toFixed(2)).toLocaleString('pt-br', { minimumFractionDigits: 2 });
+                    this.vendas = parseFloat(parseFloat(listar_lucro.data[0].vendas.replace(",", ".")).toFixed(2)).toLocaleString('pt-br', { minimumFractionDigits: 2 });
+                    this.comissao = parseFloat(comissao.toFixed(2)).toLocaleString('pt-br', { minimumFractionDigits: 2 });
+                    this.conta_recebe = parseFloat(parseFloat(listar_conta_recebe.data[0].valor_conta.replace(",", ".")).toFixed(2)).toLocaleString('pt-br', { minimumFractionDigits: 2 });
+                    this.conta_pagar = parseFloat(parseFloat(listar_conta_pagar.data[0].valor_conta.replace(",", ".")).toFixed(2)).toLocaleString('pt-br', { minimumFractionDigits: 2 });
+
+                    this.titulolucro = 'LUCRO (' + this.data_ini + '-' + this.data_fim + ')'
+                    this.titulovendas = 'VENDAS À VISTA (' + this.data_ini + '-' + this.data_fim + ')'
+                    this.tituloconta_recebe = 'CONTAS RECEBidAS (' + this.data_ini + '-' + this.data_fim + ')'
+                    this.titulocomissao = 'comissão a pagar (' + this.data_ini + '-' + this.data_fim + ')'
+                    this.tituloconta_pagar = 'CONTAS PAGAS (' + this.data_ini + '-' + this.data_fim + ')'
+                    if (this.conta_recebe == '' || this.conta_recebe == 'NaN') {
+                        this.conta_recebe = '0.00'
+                    }
+                    if (this.lucro == '' || this.lucro == 'NaN') {
+                        this.lucro = '0.00'
+                    }
+                    if (this.conta_pagar == '' || this.conta_pagar == 'NaN') {
+                        this.conta_pagar = '0.00'
+                    }
+                    if (this.vendas == '' || this.vendas == 'NaN') {
+                        this.vendas = '0.00'
+                    }
+                    if (this.comissao == '' || this.comissao == 'NaN') {
+                        this.comissao = '0.00'
+                    }
+
+                    this.dialog_pesq = false
+                },
+
+                imprimir_areceber() {
+
+                    var doc = new jsPDF('landscape', 'pt', 'a4');
+                    doc.setFontSize(13);
+                    doc.text('Contas a receber', 3, 22);
+                    doc.text('____________________________________________________________________________________________________________________________________________________________________________', 0, 35);
+                    doc.setFontSize(10);
+                    doc.text('Status', 3, 51);
+                    doc.text('vencimento', 120, 51);
+                    doc.text('parcelas', 230, 51);
+                    doc.text('Data Pagamento', 330, 51);
+                    doc.text('cliente', 450, 51);
+                    doc.text('valor', 700, 51);
+                    doc.text('______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________', 0, 58);
+                    l = 65
+                    cont = 0
+                    page = 1
+                    qtd_reg = 42
+                    doc.setFontSize(8);
+                    for (var i = 0; i < this.desserts_areceber.length; i++) {
+                        doc.text('______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________', 0, l - 7);
+                        doc.text(this.desserts_areceber[i].status_desc.substr(0, 20), 3, l + 3);
+                        doc.text(this.desserts_areceber[i].vencimento.substr(0, 40), 128, l + 3);
+                        doc.text(this.desserts_areceber[i].parcela, 242, l + 3);
+                        doc.text(this.desserts_areceber[i].data_pagamento, 350, l + 3);
+                        doc.text(this.desserts_areceber[i].cliente, 451, l + 3);
+                        doc.text("R$ " + this.desserts_areceber[i].valor, 700, l + 3);
+
+                        l = l + 12
+                        cont = cont + 1
+                        if (cont > qtd_reg) {
+                            qtd_reg = 48
+                            page = page + 1
+                            doc.addPage();
+                            doc.setPage(page)
+                            l = 10
+                            cont = 0
+                        }
+                    }
+
+                    //doc.addImage(imgData, 'JPEG', 15, 40, 20, 20);
+                    doc.save('Contas_receber.pdf')
+                },
+
+                imprimir_pagar() {
+
+                    var doc = new jsPDF('landscape', 'pt', 'a4');
+                    doc.setFontSize(13);
+                    doc.text('Contas a pagar', 3, 22);
+                    doc.text('____________________________________________________________________________________________________________________________________________________________________________', 0, 35);
+                    doc.setFontSize(10);
+                    doc.text('Status', 3, 51);
+                    doc.text('vencimento', 120, 51);
+                    doc.text('parcelas', 230, 51);
+                    doc.text('Data Pagamento', 330, 51);
+                    doc.text('Descrição', 450, 51);
+                    doc.text('Valor', 700, 51);
+                    doc.text('______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________', 0, 58);
+                    l = 65
+                    cont = 0
+                    page = 1
+                    qtd_reg = 42
+                    doc.setFontSize(8);
+                    for (var i = 0; i < this.desserts_pagar.length; i++) {
+                        doc.text('______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________', 0, l - 7);
+                        doc.text(this.desserts_pagar[i].status_desc.substr(0, 20), 3, l + 3);
+                        doc.text(this.desserts_pagar[i].vencimento.substr(0, 40), 128, l + 3);
+                        doc.text(this.desserts_pagar[i].parcela, 242, l + 3);
+                        doc.text(this.desserts_pagar[i].data_pagamento, 350, l + 3);
+                        doc.text(this.desserts_pagar[i].descricao, 451, l + 3);
+                        doc.text("R$ " + this.desserts_pagar[i].valor, 700, l + 3);
+
+                        l = l + 12
+                        cont = cont + 1
+                        if (cont > qtd_reg) {
+                            qtd_reg = 48
+                            page = page + 1
+                            doc.addPage();
+                            doc.setPage(page)
+                            l = 10
+                            cont = 0
+                        }
+                    }
+
+                    //doc.addImage(imgData, 'JPEG', 15, 40, 20, 20);
+                    doc.save('Contas_pagar.pdf')
+                }
+
+            }
+
+        })
+    </script>
+
+</body>
+</html>

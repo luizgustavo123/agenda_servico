@@ -1,0 +1,2262 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" type="imagem/png" href="https://i.ibb.co/Cwbt6V2/LOGO-2.png" />
+    <meta charset="utf-8" />
+    <title>Softenter</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
+    <style>
+        #app {
+            background-color: lightblue;
+        }
+
+
+        #Div_leitor {
+            display: none;
+        }
+
+        .fieldset-border {
+            border: 2px groove #ddd !important;
+            border-radius: 20px;
+            padding: 0 1.4em 1.4em 1.4em !important;
+            margin: 0 0 1.5em 0 !important;
+            -webkit-box-shadow: 0px 0px 0px 0px #000;
+            box-shadow: 0px 0px 0px 0px #000;
+        }
+
+            .fieldset-border .legend-border {
+                font-size: 1.2em !important;
+                text-align: left !important;
+                width: auto;
+                padding: 0 10px;
+                border-bottom: none;
+            }
+    </style>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/v-mask/dist/v-mask.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.4.1/jspdf.debug.js" integrity="sha384-THVO/sM0mFD9h7dfSndI6TS0PgAGavwKvB5hAxRRvc0o9cPLohB0wb/PTA7LdUHs" crossorigin="anonymous"></script>
+    <script src="globals.js"></script>
+
+    <div id="app">
+        <v-app id="inspire">
+
+            <div>
+                <v-toolbar dark
+                           prominent
+                           height=110
+                           src="https://i.ibb.co/Lxgbb8B/vendas4.jpg">
+
+                    <template v-slot:img="{ props }">
+                        <v-img v-bind="props"
+                               gradient="to right, #1672C4, #1672C4CC, #1672C4CC, #3141D6CC, #3141D6CC"></v-img>
+                    </template>
+
+                    <v-toolbar-title>{{nome_empresa}}</v-toolbar-title>
+
+
+                    <template v-slot:extension>
+                        <v-tabs align-with-title>
+
+                            <v-btn color="#FFFFFF" text small onclick="window.location.href ='https://softenter.com.br/agenda.html'"> <v-icon dark left>mdi-calendar</v-icon> Agenda</v-btn>
+
+                            <v-btn color="#FFFFFF" text small onclick="window.location.href ='https://softenter.com.br/servicos.html'"> <v-icon dark left>mdi-food-variant</v-icon>Serviços </v-btn>
+
+                            <v-btn color="#FFFFFF" text small onclick="window.location.href ='https://softenter.com.br/financeiro.html'"> <v-icon dark left>mdi-currency-usd</v-icon> Financeiro </v-btn>
+
+                            <v-menu open-on-hover offset-y>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn color="#FFFFFF"
+                                           text
+                                           small
+                                           v-bind="attrs"
+                                           v-on="on">
+                                        mais
+                                        <v-icon right>
+                                            mdi-menu-down
+                                        </v-icon>
+                                    </v-btn>
+                                </template>
+                                <v-card class="mx-auto"
+                                        max-width="190"
+                                        tile>
+                                    <v-list-item>
+                                        <v-list-item-content>
+                                            <v-btn text small onclick="window.location.href ='https://softenter.com.br/clientes.html'"> <v-icon dark left>mdi-account-multiple</v-icon> Clientes &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </v-btn>
+
+                                            <v-btn :disabled="disabled_sem_perm" text small onclick="window.location.href ='https://softenter.com.br/funcionarios.html'"> <v-icon dark left>mdi-account-group</v-icon> Funcionários &nbsp; </v-btn>
+
+                                            <v-btn :disabled="disabled_sem_perm" text small onclick="window.location.href ='https://softenter.com.br/configuracoes.html'"> <v-icon dark left>mdi-cogs</v-icon> Configurações </v-btn>
+                                        </v-list-item-content>
+
+                                </v-card>
+                            </v-menu>
+                        </v-tabs>
+                    </template>
+
+                </v-toolbar>
+            </div>
+
+            <v-snackbar timeout="2000"
+                        centered
+                        elevation="24"
+                        vertical
+                        v-model="snackbar"
+                        :color="cor_aviso">
+                <v-icon left>{{ icon }}</v-icon>
+
+                {{ text_aviso }}
+
+            </v-snackbar>
+
+            <v-data-table :headers="headers"
+                          :items="desserts"
+                          sort-by="calories"
+                          class="elevation-1"
+                          mobile-breakpoint="0"
+                          :footer-props="{'items-per-page-text':'Linhas por página'}">
+                <template v-slot:top>
+                    <v-toolbar class="mb-2"
+                               color="#1E88E5"
+                               dark
+                               flat>
+                        <v-toolbar-title> <v-icon dark left>mdi-calendar</v-icon> Agenda</v-toolbar-title>
+
+                        <v-divider class="mx-4"
+                                   inset
+                                   vertical></v-divider>
+                        <v-spacer></v-spacer>
+
+
+                        <v-btn icon
+                               color="white"
+                               @click="imprimir_relatorio()">
+                            <v-icon>mdi-printer</v-icon>
+                        </v-btn>
+                        <v-dialog v-model="dialog_pesq"
+                                  width="500">
+                            <template v-slot:activator="{ on, attrs_dialog_pesq }">
+                                <v-btn icon
+                                       fab
+                                       color="white"
+                                       v-bind="attrs_dialog_pesq"
+                                       v-on="on">
+                                    <v-icon>mdi-magnify</v-icon>
+                                </v-btn>
+                            </template>
+
+                            <v-card>
+
+                                <v-card-title class="headline grey lighten-2">
+                                    Pesquisar
+                                    <v-spacer></v-spacer>
+                                    <v-btn small
+                                           icon
+                                           color="black"
+                                           @click="dialog_pesq = false">
+                                        <v-icon>mdi-close</v-icon>
+                                    </v-btn>
+
+                                </v-card-title>
+
+                                <br>
+
+                                <v-card-text>
+                                    <v-row dense>
+                                        <v-col cols="12" sm="6">
+
+                                            <v-menu v-model="menudataini"
+                                                    :close-on-content-click="false"
+                                                    transition="scale-transition"
+                                                    offset-y
+                                                    max-width="290px"
+                                                    min-width="auto">
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-text-field v-model="data_ini"
+                                                                  label="Data início"
+                                                                  outlined
+                                                                  readonly
+                                                                  append-icon="mdi-calendar"
+                                                                  v-bind="attrs"
+                                                                  v-on="on"></v-text-field>
+                                                </template>
+                                                <v-date-picker v-model="dateini"
+                                                               no-title
+                                                               locale="pt-br"
+                                                               @input="menudataini = false"></v-date-picker>
+                                            </v-menu>
+                                        </v-col>
+                                        <v-col cols="12" sm="6">
+                                            <v-menu v-model="menudatafim"
+                                                    :close-on-content-click="false"
+                                                    transition="scale-transition"
+                                                    offset-y
+                                                    max-width="290px"
+                                                    min-width="auto">
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-text-field v-model="data_fim"
+                                                                  label="Data fim"
+                                                                  outlined
+                                                                  readonly
+                                                                  append-icon="mdi-calendar"
+                                                                  v-bind="attrs"
+                                                                  v-on="on"></v-text-field>
+                                                </template>
+                                                <v-date-picker v-model="datefim"
+                                                               no-title
+                                                               locale="pt-br"
+                                                               @input="menudatafim = false"></v-date-picker>
+                                            </v-menu>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row dense>
+                                        <v-col cols="12" sm="12">
+                                            <v-autocomplete outlined clearable :readonly="readonly_func" v-model="funcionario_pesq" label="Profissional" :items="items_funcionarios" item-text="nome_func" item-value="usuario"></v-autocomplete>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row dense>
+                                        <v-col cols="12" sm="12">
+                                            <v-text-field v-model="cli_pesq" label="Cliente" outlined></v-text-field>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row dense>
+                                        <v-col cols="12" sm="12">
+                                            <v-autocomplete v-model="pesq_nome_prod"
+                                                            :items="items_prod"
+                                                            label="Produto ou serviço" outlined></v-autocomplete>
+                                        </v-col>
+                                    </v-row>
+
+                                </v-card-text>
+
+                                <v-divider></v-divider>
+
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="primary"
+                                           text
+                                           @click="pesq_pedido()">
+                                        <v-icon left>mdi-magnify</v-icon>
+                                        Pesquisar
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
+
+                        <v-dialog v-model="dialog"
+                                  persistent
+                                  eager
+                                  max-width="700px">
+                            <template v-slot:activator="{ on, attrs }">
+
+                                <v-btn icon fab color="white" dark class="mb-2" v-bind="attrs" v-on="on" x-large>
+
+                                    <v-icon x-large>mdi-plus-circle</v-icon>
+                                </v-btn>
+
+                                <v-divider class="mx-4" inset vertical></v-divider>
+
+
+                            </template>
+
+                            <v-card>
+
+                                <div style="height: 80px;" class="text-h5 grey lighten-2">
+                                 <br>
+                                        <h4 class="text-center">NOVA VENDA</h4>
+                                 
+                                </div>
+
+                                <!--<v-img height="100px"
+           src="https://cdn.pixabay.com/photo/2020/07/12/07/47/bee-5396362_1280.jpg">
+
+
+        <div class="text-center">
+            <br>
+            <h1 class="white--text">NOVA VENDA</h1>
+        </div>
+
+    </v-img>-->
+
+                                <br>
+
+                                <v-card-text>
+
+                                    <v-row dense>
+
+                                        <v-col cols="4" sm="2">
+                                            <v-checkbox v-model="editedItem.concluir"
+                                                        color="success"
+                                                        label="Concluir"></v-checkbox>
+                                        </v-col>
+                                        <v-col cols="7" sm="3">
+
+                                            <v-autocomplete outlined :readonly="readonly_func" v-model="editedItem.funcionario" label="Profissional responsável" :items="items_funcionarios" item-text="nome_func" item-value="usuario"></v-autocomplete>
+
+                                        </v-col>
+
+                                        <v-col cols="6" sm="3">
+                                            <v-menu v-model="menudata"
+                                                    :close-on-content-click="false"
+                                                    transition="scale-transition"
+                                                    offset-y
+                                                    max-width="290px"
+                                                    min-width="auto">
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-text-field v-model="editedItem.data"
+                                                                  label="Data"
+                                                                  outlined
+                                                                  :error-messages="erro_Preench"
+                                                                  readonly
+                                                                  append-icon="mdi-calendar"
+                                                                  v-bind="attrs"
+                                                                  v-on="on"></v-text-field>
+
+                                                </template>
+                                                <v-date-picker v-model="date"
+                                                               no-title
+                                                               locale="pt-br"
+                                                               @input="menudata = false"></v-date-picker>
+                                            </v-menu>
+                                        </v-col>
+
+                                        <v-col cols="3" sm="2">
+                                            <v-text-field :error-messages="erro_Preench" v-model="editedItem.hora" v-mask="'##:##'" label="Horário" outlined></v-text-field>
+                                        </v-col>
+
+                                        <v-col cols="2" sm="1">
+                                            <v-btn large
+                                                   icon
+                                                   color="green"
+                                                   @click="dialog_contas = true">
+                                                <v-icon>mdi-cash-multiple</v-icon>
+                                            </v-btn>
+                                        </v-col>
+
+                                        <v-col cols="1" sm="1">
+                                            <v-btn large
+                                                   icon
+                                                   color="blue"
+                                                   @click="dialog_cliente = true">
+                                                <v-icon>mdi-account-edit</v-icon>
+                                            </v-btn>
+                                        </v-col>
+
+                                    </v-row>
+
+
+                                    <v-dialog v-model="dialog_contas"
+                                              width="650">
+
+                                        <v-card>
+                                            <v-card-title class="text-h5 grey lighten-2">
+                                                Lançar Contas a Receber
+                                            </v-card-title>
+                                            <br>
+                                            <v-card-text>
+                                                <v-row dense>
+
+                                                    <v-col cols="6" sm="2">
+                                                        <v-checkbox v-model="editedItem.prazo"
+                                                                    color="blue"
+                                                                    label="A prazo"
+                                                                    @click="prazo()">
+
+                                                        </v-checkbox>
+                                                    </v-col>
+
+                                                    <v-col cols="6" sm="2">
+                                                        <v-text-field v-model="editedItem.qtd_parcela" :disabled="disabled_prazo" label="Parcelas" outlined></v-text-field>
+                                                    </v-col>
+
+                                                    <v-col cols="6" sm="4">
+
+                                                        <v-menu v-model="menudatavenc"
+                                                                :close-on-content-click="false"
+                                                                transition="scale-transition"
+                                                                offset-y
+                                                                :disabled="disabled_prazo"
+                                                                max-width="290px"
+                                                                min-width="auto">
+                                                            <template v-slot:activator="{ on, attrs }">
+                                                                <v-text-field v-model="editedItem.data_venc"
+                                                                              label="Data vencimento"
+                                                                              outlined
+                                                                              readonly
+                                                                              :disabled="disabled_prazo"
+                                                                              append-icon="mdi-calendar"
+                                                                              v-bind="attrs"
+                                                                              v-on="on"></v-text-field>
+                                                            </template>
+                                                            <v-date-picker v-model="datevenc"
+                                                                           :disabled="disabled_prazo"
+                                                                           no-title
+                                                                           locale="pt-br"
+                                                                           @input="menudatavenc = false"></v-date-picker>
+                                                        </v-menu>
+                                                    </v-col>
+
+                                                    <v-col cols="6" sm="4">
+                                                        <v-autocomplete outlined v-model="editedItem.pag" label="Forma de pagamento" :items="items_pag"></v-autocomplete>
+                                                    </v-col>
+
+                                                </v-row>
+                                            </v-card-text>
+
+                                            <v-divider></v-divider>
+
+                                            <v-card-actions>
+                                                <v-spacer></v-spacer>
+                                                <v-btn color="#4CAF50"
+                                                       text
+                                                       @click="dialog_contas = false">
+                                                    PRONTO
+                                                </v-btn>
+                                            </v-card-actions>
+                                        </v-card>
+                                    </v-dialog>
+
+                                    <v-dialog v-model="dialog_cliente"
+                                              width="500">
+
+                                        <v-card>
+                                            <v-card-title class="text-h5 grey lighten-2">
+                                                Informações do Cliente
+                                            </v-card-title>
+                                            <br>
+                                            <v-card-text>
+                                                <div class="text-center">
+                                                    <v-dialog v-model="dialog_cli"
+                                                              width="500">
+                                                        <v-card>
+                                                            <v-card-title class="text-h5 grey lighten-2">
+                                                                Selecionar cliente
+                                                            </v-card-title>
+
+                                                            <v-card-text>
+                                                                <v-row dense>
+                                                                    <v-col cols="12" sm="12">
+                                                                        <v-autocomplete v-model="cli_selec"
+                                                                                        :items="items_cli"
+                                                                                        label="Cliente" outlined></v-autocomplete>
+                                                                    </v-col>
+                                                                </v-row>
+                                                            </v-card-text>
+
+                                                            <v-divider></v-divider>
+
+                                                            <v-card-actions>
+                                                                <v-spacer></v-spacer>
+                                                                <v-btn color="primary"
+                                                                       text
+                                                                       @click="preenche_cli()">
+                                                                    Confirmar
+                                                                </v-btn>
+                                                            </v-card-actions>
+                                                        </v-card>
+                                                    </v-dialog>
+                                                </div>
+
+                                                <v-row dense>
+                                                    <v-col cols="3" sm="3">
+                                                        <v-text-field outlined clearable filled readonly v-model="editedItem.cod_cli" label="Código"></v-text-field>
+                                                    </v-col>
+                                                    <v-col cols="2" sm="1">
+                                                        <v-btn large
+                                                               icon
+                                                               color="green"
+                                                               @click="dialog_cli = true">
+                                                            <v-icon>mdi-account-convert</v-icon>
+                                                        </v-btn>
+                                                    </v-col>
+                                                    <v-col cols="7" sm="8">
+                                                        <v-text-field v-model="editedItem.cliente" label="Cliente" outlined></v-text-field>
+
+                                                    </v-col>
+                                                </v-row>
+                                                <v-row dense>
+                                                    <v-col cols="4" sm="4">
+                                                        <v-text-field v-model="editedItem.celular" v-mask="'(##)#####-####'" label="Celular" outlined></v-text-field>
+
+                                                    </v-col>
+                                                    <v-col cols="8" sm="8">
+                                                        <v-text-field v-model="editedItem.endereco" label="Endereço" outlined></v-text-field>
+                                                    </v-col>
+
+                                                </v-row>
+                                                <v-row dense>
+                                                    <v-col cols="6" sm="6">
+                                                        <v-text-field v-model="editedItem.bairro" label="Bairro" outlined></v-text-field>
+                                                    </v-col>
+
+                                                    <v-col cols="6" sm="6">
+                                                        <v-text-field v-model="editedItem.cidade" label="Cidade" outlined></v-text-field>
+                                                    </v-col>
+                                                </v-row>
+
+                                                <v-row dense>
+                                                    <v-col cols="12" sm="12">
+                                                        <v-textarea v-model="editedItem.descricao" label="Descrição" outlined rows="3"></v-textarea>
+                                                    </v-col>
+                                                </v-row>
+                                            </v-card-text>
+
+                                            <v-divider></v-divider>
+
+                                            <v-card-actions>
+                                                <v-spacer></v-spacer>
+                                                <v-btn color="#4CAF50"
+                                                       text
+                                                       @click="dialog_cliente = false">
+                                                    PRONTO
+                                                </v-btn>
+                                            </v-card-actions>
+                                        </v-card>
+                                    </v-dialog>
+
+                                    <v-dialog persistent width="200" v-model="carregando">
+                                        <v-card color="primary"
+                                                dark>
+                                            <v-card-text>
+                                                Carregando... Aguarde !
+                                                <v-progress-linear indeterminate
+                                                                   color="white"
+                                                                   class="mb-0">
+                                                </v-progress-linear>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-dialog>
+
+                                    <div id="Div_leitor">
+                                        <fieldset class="fieldset-border">
+                                            <legend class="legend-border">Leitor de código de barras</legend>
+                                            <br>
+                                            <v-row dense>
+                                                <v-col cols="6" sm="6">
+                                                    <v-text-field v-model="editedItem_prod.cod_prod"
+                                                                  autofocus
+                                                                  :error="exib_erro_cod_prod"
+                                                                  @change="preenche_prod()"
+                                                                  label="Código"
+                                                                  outlined
+                                                                  append-icon="mdi-barcode-scan"></v-text-field>
+                                                </v-col>
+                                                <v-col cols="3" sm="3">
+                                                    <v-text-field @change="somar_total()"
+                                                                  v-model="editedItem_prod.qtd"
+                                                                  label="Quantidade" outlined></v-text-field>
+                                                </v-col>
+                                                <v-col cols="3"
+                                                       sm="3">
+                                                    <v-text-field prefix="R$"
+                                                                  v-model="editedItem_prod.valor_unitario"
+                                                                  id="valor_leitor"
+                                                                  onkeyup="formatarMoeda()"
+                                                                  :error="exib_erro_valor_unitario"
+                                                                  label="Valor unitário" outlined></v-text-field>
+
+                                                </v-col>
+                                            </v-row>
+                                        </fieldset>
+                                    </div>
+
+                                    <v-data-table :headers="headers_prod"
+                                                  :items="produtos"
+                                                  sort-by="calories"
+                                                  mobile-breakpoint="0"
+                                                  class="elevation-1"
+                                                  :footer-props="{'items-per-page-text':'Linhas por página'}">
+                                        <template v-slot:top>
+                                            <v-toolbar class="mb-2"
+                                                       color="#1E88E5"
+                                                       dark
+                                                       flat>
+
+                                                <v-toolbar-title>
+                                                    <h3>{{ soma_prod }}</h3>
+                                                </v-toolbar-title>
+
+                                                <v-spacer></v-spacer>
+
+                                                <v-dialog v-model="dialog_prod"
+                                                          max-width="500px">
+                                                    <template v-slot:activator="{ on, attrs_prod }">
+
+                                                        <v-btn icon
+                                                               color="white"
+                                                               v-bind="attrs_prod"
+                                                               v-on="on">
+                                                            <v-icon large>mdi-plus-circle</v-icon>
+                                                        </v-btn>
+                                                        <v-divider class="mx-4"
+                                                                   inset
+                                                                   vertical></v-divider>
+                                                        <v-btn icon
+                                                               color="white"
+                                                               @click="imprimir()">
+                                                            <v-icon>mdi-printer</v-icon>
+                                                        </v-btn>
+
+                                                    </template>
+                                                    <v-card>
+                                                        <v-card-title>
+                                                            <span class="headline">{{ formTitle_prod }}</span>
+                                                        </v-card-title>
+
+                                                        <v-card-text>
+                                                            <v-container>
+
+                                                                <v-row dense>
+                                                                    <v-col cols="12" sm="8">
+                                                                        <v-autocomplete v-model="editedItem_prod.nome"
+                                                                                        :items="items_prod"
+                                                                                        @change="somar_total()"
+                                                                                        label="Nome" outlined></v-autocomplete>
+                                                                    </v-col>
+                                                                    <v-col cols="6"
+                                                                           sm="4">
+                                                                        <v-text-field prefix="R$"
+                                                                                      v-model="editedItem_prod.valor_unitario"
+                                                                                      id="valor"
+                                                                                      onkeyup="formatarMoeda()"
+                                                                                      :error="exib_erro_valor_unitario"
+                                                                                      label="Valor" outlined></v-text-field>
+
+                                                                    </v-col>
+                                                                </v-row>
+                                                                <v-alert type="error" :value="erro_produtos">
+                                                                    Erro: preencha todos os campos corretamente
+                                                                </v-alert>
+                                                            </v-container>
+                                                        </v-card-text>
+
+                                                        <v-card-actions>
+                                                            <v-spacer></v-spacer>
+                                                            <v-btn color="#E57373"
+                                                                   text
+                                                                   @click="close_prod">
+                                                                <v-icon left>
+                                                                    mdi-close-octagon
+                                                                </v-icon>
+                                                                Cancelar
+                                                            </v-btn>
+                                                            <v-btn color="success"
+                                                                   text
+                                                                   @click="save_prod">
+                                                                <v-icon left>
+                                                                    mdi-content-save-outline
+                                                                </v-icon>
+                                                                Salvar
+                                                            </v-btn>
+                                                        </v-card-actions>
+                                                    </v-card>
+                                                </v-dialog>
+                                                <v-dialog v-model="dialogDelete" max-width="500px">
+                                                    <v-card>
+                                                        <v-card-title class="headline">Deseja deletar esse produto?</v-card-title>
+                                                        <v-card-actions_prod>
+                                                            <v-spacer></v-spacer>
+                                                            <v-btn color="blue darken-1" text @click="closeDelete">Cancelar</v-btn>
+                                                            <v-btn color="blue darken-1" text @click="deleteItemConfirm">Sim</v-btn>
+                                                            <v-spacer></v-spacer>
+                                                        </v-card-actions_prod>
+                                                    </v-card>
+                                                </v-dialog>
+                                            </v-toolbar>
+                                        </template>
+                                        <template v-slot:item.actions_prod="{ item }">
+                                            <v-icon small
+                                                    class="mr-2"
+                                                    @click="editItem_prod(item)">
+                                                mdi-pencil
+                                            </v-icon>
+
+                                            <v-icon small
+                                                    color="red"
+                                                    @click="deleteItem_prod(item)">
+                                                mdi-close
+                                            </v-icon>
+                                        </template>
+                                        <template v-slot:no-data>
+                                            <v-alert :value="true">
+                                                Sem resultados a exibir
+                                            </v-alert>
+                                        </template>
+
+                                        <template v-slot:item.valor_unitario="{ item }">
+
+                                            R$ {{ item.valor_unitario }}
+
+                                        </template>
+
+                                        <template v-slot:item.valor_total="{ item }">
+
+                                            R$ {{ item.valor_total }}
+
+                                        </template>
+
+
+                                    </v-data-table>
+
+                                </v-card-text>
+
+                                <v-divider></v-divider>
+
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="#E57373"
+                                           text
+                                           @click="close">
+                                        <v-icon left>
+                                            mdi-close-octagon
+                                        </v-icon>
+                                        Cancelar
+                                    </v-btn>
+                                    <v-btn color="success"
+                                           :disabled='desativa_salvar'
+                                           text
+                                           @click="save()">
+                                        <v-icon left>
+                                            mdi-content-save-outline
+                                        </v-icon>
+                                        Salvar
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
+                    </v-toolbar>
+                </template>
+                <template v-slot:item.actions="{ item }">
+                    <v-icon small
+                            class="mr-2"
+                            @click="editItem(item)">
+                        mdi-pencil
+                    </v-icon>
+
+                    <v-icon small
+                            :disabled='desativa_delete'
+                            color="red"
+                            @click="deleteItem(item)">
+                        mdi-close
+                    </v-icon>
+                </template>
+                <template v-slot:no-data>
+                    <v-alert :value="true">
+                        Sem resultados a exibir
+                    </v-alert>
+                </template>
+
+                <template v-slot:item.concluir_desc="{ item }">
+                    <v-chip :text-color="textColor(item.concluir_desc)" :color="getColor(item.concluir_desc)"
+                            dark>
+
+                        <h4>{{ item.concluir_desc }}</h4>
+
+
+
+                    </v-chip>
+                </template>
+
+            </v-data-table>
+
+        </v-app>
+    </div>
+
+
+
+
+
+    <script>
+
+        function leitor_cod(el) {
+            //display_leitor = document.getElementById('Div_leitor').style.display;
+
+            if (localStorage.leitor_barras == "true")
+                document.getElementById(el).style.display = 'block';
+            else
+                document.getElementById(el).style.display = 'none';
+        }
+
+        /* function Mudarestado(el) {
+             var display = document.getElementById(el).style.display;
+             if (display == "block")
+                 document.getElementById(el).style.display = 'none';
+             else
+                 document.getElementById(el).style.display = 'block';
+         }*/
+
+        Vue.use(VueMask.VueMaskPlugin);
+
+        document.addEventListener('keydown', function (event) {
+            if (event.keyCode !== 13) return;
+            app.__vue__.preenche_prod()
+            app.__vue__.save_prod()
+        }),
+
+            new Vue({
+
+                el: '#app',
+                vuetify: new Vuetify(),
+                data: vm => ({
+                    url: 'https://softenter.com.br',
+                    cli_selec: "",
+                    dialog_cli: false,
+                    exib_erro_cod_prod: false,
+                    exib_erro_valor_unitario: false,
+                    snackbar: false,
+                    text_aviso: '',
+                    cor_aviso: "success",
+                    icon: 'mdi-check-circle',
+                    cli_pesq: '',
+                    pesq_nome_prod: '',
+                    funcionario_pesq: sessionStorage.usuario_nome,
+                    desativa_delete: false,
+                    desativa_salvar: false,
+                    date: new Date().toLocaleDateString().substr(6, 4) + '-' + new Date().toLocaleDateString().substr(3, 2) + '-' + new Date().toLocaleDateString().substr(0, 2),
+                    dateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
+                    menudata: false,
+                    dateini: new Date().toLocaleDateString().substr(6, 4) + '-' + new Date().toLocaleDateString().substr(3, 2) + '-' + new Date().toLocaleDateString().substr(0, 2),
+                    menudataini: false,
+                    datefim: new Date().toLocaleDateString().substr(6, 4) + '-' + new Date().toLocaleDateString().substr(3, 2) + '-' + new Date().toLocaleDateString().substr(0, 2),
+                    menudatafim: false,
+                    items_prod: [],
+                    items_cli: [],
+                    items_funcionarios: [],
+                    items_pag: ['Dinheiro', 'Cartão de crédito', 'Cartão de débito', 'Boleto', 'Transferência bancária', 'Pix', 'Cheque'],
+                    bairro: '',
+                    menudatavenc: false,
+                    data_venc: new Date().toLocaleDateString(),
+                    datevenc: new Date().toLocaleDateString().substr(6, 4) + '-' + new Date().toLocaleDateString().substr(3, 2) + '-' + new Date().toLocaleDateString().substr(0, 2),
+                    nome_empresa: '',
+                    dialog_pesq: false,
+                    data_ini: new Date().toLocaleDateString(),
+                    data_fim: new Date().toLocaleDateString(),
+                    data: vm.formatDate(new Date().toISOString().substr(0, 10)),
+                    hora: '',
+                    carregando: false,
+                    soma_prod: 0,
+                    erro_Preench: '',
+                    erro_produtos: false,
+                    dialog_prod: false,
+                    dialogDelete: false,
+                    concluir: false,
+                    concluir_desc: '',
+                    dialog: false,
+                    dialogDelete: false,
+                    readonly_func: false,
+                    disabled_prazo: false,
+                    disabled_sem_perm: false,
+                    show1: false,
+                    usuario: '',
+                    custo_soma: 0,
+                    password: '',
+                    prod_anterior: [],
+                    concluir_anterior: false,
+                    dialog_cod_bar: false,
+                    valor_total_soma: 0,
+                    filtro: false,
+                    dialog_contas: false,
+                    dialog_cliente: false,
+
+                    headers: [
+                        { text: 'Status', value: 'concluir_desc' },
+                        { text: 'Data', value: 'data' },
+                        { text: 'Horário', value: 'hora' },
+                        { text: 'Cliente', value: 'cliente' },
+                        { text: 'Endereço', value: 'endereco' },
+                        { text: 'Bairro', value: 'bairro' },
+                        { text: 'Cidade', value: 'cidade' },
+                        { text: 'Valor', value: 'valor' },
+                        { text: 'Editar/deletar', value: 'actions', align: 'center', sortable: false },
+
+                    ],
+
+                    headers_prod: [
+                        { text: 'Serviço', value: 'nome' },
+                        { text: 'Valor', value: 'valor_unitario' },
+                        //{ text: 'Quantidade', value: 'qtd' },
+                        //{ text: 'Valor Total', value: 'valor_total' },
+                        { text: 'Editar/deletar', value: 'actions_prod', align: 'center', sortable: false },
+
+                    ],
+
+
+                    produtos: [],
+                    desserts: [],
+                    editedIndex_prod: -1,
+                    editedItem_prod: {
+                        cod_prod: '',
+                        nome: '',
+                        qtd: '1',
+                        valor_unitario: '',
+                        valor_total: '',
+                        soma: 0,
+                        custo: 0,
+                    },
+                    defaultItem_prod: {
+                        cod_prod: '',
+                        nome: '',
+                        qtd: '1',
+                        valor_unitario: '',
+                        valor_total: '',
+                        soma: 0,
+                        custo: 0,
+                    },
+                    editedIndex: -1,
+                    editedItem: {
+                        id: '',
+                        data: new Date().toLocaleDateString(),
+                        cliente: '',
+                        hora: ("0" + new Date().getHours()).slice(-2) + ':' + new Date().getMinutes(),//new Date().getHours() + ':' + new Date().getMinutes(),
+                        celular: '',
+                        concluido: '',
+                        bairro: '',
+                        cidade: '',
+                        descricao: '',
+                        endereco: '',
+                        funcionario: '',
+                        pag: '',
+                        qtd_parcela: '',
+                        data_venc: '',
+                        //  desc_ataca: '',
+
+                    },
+                    defaultItem: {
+                        id: '',
+                        data: new Date().toLocaleDateString(),
+                        hora: ("0" + new Date().getHours()).slice(-2) + ':' + new Date().getMinutes(),//new Date().getHours() + ':' + new Date().getMinutes(),
+                        cliente: '',
+                        celular: '',
+                        concluido: '',
+                        cidade: '',
+                        bairro: '',
+                        descricao: '',
+                        endereco: '',
+                        funcionario: '',
+                        pag: '',
+                        qtd_parcela: '',
+                        data_venc: '',
+                        //    desc_ataca: '',
+                    },
+                }),
+
+
+
+
+
+
+                computed: {
+                    /* data() {
+                         return this.formatDate(this.date)
+                     },*/
+                    formTitle() {
+                        return this.editedIndex === -1 ? 'Novo' : 'Editar'
+                    },
+
+                    formTitle_prod() {
+                        return this.editedIndex_prod === -1 ? 'Novo' : 'Editar'
+                    },
+                },
+
+                watch: {
+                    date(val) {
+                        this.editedItem.data = this.formatDate(this.date)
+                    },
+                    dateini(val) {
+                        this.data_ini = this.formatDate(this.dateini)
+                    },
+                    datefim(val) {
+                        this.data_fim = this.formatDate(this.datefim)
+                    },
+                    datevenc(val) {
+                        this.editedItem.data_venc = this.formatDate(this.datevenc)
+                    },
+                    async dialog(val) {
+
+                        leitor_cod('Div_leitor')
+
+                        if (this.editedItem.funcionario == '') {
+                            //listar_func = await axios.get(this.url + '/api/funcionarios/listar/funcionarios_id?Id=' + sessionStorage.id_usulogado)
+                            this.editedItem.funcionario = sessionStorage.usuario_nome//listar_func.data[0].usuario
+                        }
+
+                        if (this.editedIndex == -1) {
+                            this.disabled_prazo = true
+                            this.editedItem.pag = 'Dinheiro'
+                            this.editedItem.qtd_parcela = ''
+                            this.editedItem.data_venc = ''
+                        } else {
+                            if (this.editedItem.prazo == true) {
+                                this.disabled_prazo = false
+                            } else {
+                                this.disabled_prazo = true
+                            }
+                        }
+
+
+                        this.produtos = []
+                        val || this.close()
+
+
+
+                    },
+                    dialogDelete(val) {
+                        val || this.closeDelete()
+                    },
+                    dialog_prod(val) {
+                        val || this.close_prod()
+                    },
+                    dialogDelete_prod(val) {
+                        val || this.closeDelete_prod()
+                    },
+
+                },
+
+                created() {
+                    this.editedItem.pag = 'Dinheiro'
+                    this.editedItem.qtd_parcela = '1'
+
+                    this.initialize()
+
+                    this.info_empresa()
+
+                    if (sessionStorage.login_ativo != 'true') {
+                        window.location.href = this.url + "/login.html";
+                    }
+
+                    if (sessionStorage.usuadm == '0') {
+                        this.disabled_sem_perm = true
+                    }
+
+
+                },
+
+
+
+                methods: {
+
+                    prazo() {
+                        if (this.editedItem.prazo == true) {
+                            this.disabled_prazo = false
+                            this.editedItem.qtd_parcela = '1'
+                            this.editedItem.data_venc = new Date().toLocaleDateString()
+                        } else {
+                            this.disabled_prazo = true
+                            this.editedItem.qtd_parcela = ''
+                            this.editedItem.data_venc = ''
+                        }
+
+                    },
+
+                    /*   formata_valor() {
+                           verif_letra = !isNaN(parseFloat(this.editedItem_prod.valor_unitario.replaceAll(",", "").replaceAll(".", ""))) && isFinite(this.editedItem_prod.valor_unitario.replaceAll(",", "").replaceAll(".", ""));
+
+                           if (verif_letra == false) {
+                               this.editedItem_prod.valor_unitario = '0'
+                           }
+
+                       },*/
+
+                    info_empresa() {
+                        this.nome_empresa = sessionStorage.nome_empresa
+                    },
+
+                    formatDate(date) {
+                        if (!date) return null
+
+                        const [year, month, day] = date.split('-')
+                        return `${day}/${month}/${year}`
+                    },
+
+                    async initialize() {
+
+                        this.items_funcionarios = []
+                        listar_func = await axios.get(this.url + '/api/funcionarios/listar/funcionarios?fk_empresa=' + sessionStorage.id_empresalogado)
+                        for (var i = 0; i < listar_func.data.length; i++) {
+                            this.items_funcionarios.push(
+                                {
+                                    usuario: listar_func.data[i].usuario,
+                                    nome_func: listar_func.data[i].nome,
+                                })
+
+                            
+                        }
+
+
+                        this.items_prod = []
+                        listar_produtos = await axios.get(this.url + '/api/produtos/listar/produtos?Fk_empresa=' + sessionStorage.id_empresalogado)
+                        for (var i = 0; i < listar_produtos.data.length; i++) {
+                            this.items_prod.push(listar_produtos.data[i].produto)
+                        }
+
+                        this.items_cli = []
+                        listar_clientes = await axios.get(this.url + '/api/clientes/listar/clientes?Fk_empresa=' + sessionStorage.id_empresalogado)
+                        for (var i = 0; i < listar_clientes.data.length; i++) {
+                            this.items_cli.push(listar_clientes.data[i].id + '-' + listar_clientes.data[i].nome)
+                        }
+
+
+
+                        //this.editedItem.data = new Date().toLocaleDateString()
+                        this.soma = 0
+
+                        listar_pedidos = await axios.get(this.url + '/api/pedidos/pedidos/todos?Fk_empresa=' + sessionStorage.id_empresalogado)
+
+                        this.desserts = []
+                        for (var i = 0; i < listar_pedidos.data.length; i++) {
+                            if (listar_pedidos.data[i].concluir == 1) {
+                                concluido = true
+                                concluir_desc = 'Concluído'
+                            }
+                            else {
+                                concluido = false
+                                concluir_desc = 'Em aberto'
+                            }
+                            /*     if (listar_pedidos.data[i].desc_ataca == 1) {
+                                     desc_ataca = true
+                                 } else {
+                                     desc_ataca = false
+                                 }
+                                 */
+
+                            data = listar_pedidos.data[i].data,
+
+                                dia = data.slice(8, 10);
+                            mes = data.slice(5, 7);
+                            ano = data.slice(0, 4);
+                            hora = data.slice(11, 16);
+
+                            data = dia + "/" + mes + "/" + ano  //+ " - " + hora
+
+                            if (listar_pedidos.data[i].prazo == 1) {
+                                prazo = true
+                            }
+                            else {
+                                prazo = false
+                            }
+
+                            data_vencimento = listar_pedidos.data[i].data_vencimento
+
+                            if (data_vencimento != '') {
+                                dia = data_vencimento.slice(8, 10);
+                                mes = data_vencimento.slice(5, 7);
+                                ano = data_vencimento.slice(0, 4);
+                                data_vencimento = dia + "/" + mes + "/" + ano
+                            }
+
+
+                            this.desserts.push(
+                                {
+                                    bairro: listar_pedidos.data[i].bairro,
+                                    data: data,
+                                    hora: hora,
+                                    cliente: listar_pedidos.data[i].cliente,
+                                    concluir: concluido,
+                                    //desc_ataca: desc_ataca,
+                                    concluir_desc: concluir_desc,
+                                    celular: listar_pedidos.data[i].celular,
+                                    id: listar_pedidos.data[i].id,
+                                    descricao: listar_pedidos.data[i].descricao.replaceAll("\\n", "\n"),
+                                    endereco: listar_pedidos.data[i].endereco,
+                                    cidade: listar_pedidos.data[i].cidade,
+                                    cod_cli: listar_pedidos.data[i].fk_cod_cli,
+                                    funcionario: listar_pedidos.data[i].usuario,
+                                    prazo: prazo,
+                                    data_venc: data_vencimento,
+                                    qtd_parcela: listar_pedidos.data[i].parcelas,
+                                    valor: parseFloat(listar_pedidos.data[i].valor_total).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }),
+                                    pag: listar_pedidos.data[i].forma_pagamento,
+                                }
+                            )
+
+                        }
+
+                        this.filtro = false
+                    },
+
+
+                    async editItem(item) {
+
+                        this.editedIndex = this.desserts.indexOf(item)
+                        this.editedItem = Object.assign({}, item)
+                        this.dialog = true
+
+
+                        this.date = String(this.editedItem.data).substr(6, 4) + '-' + String(this.editedItem.data).substr(3, 2) + '-' + String(this.editedItem.data).substr(0, 2)
+
+                        id_pedido = this.desserts[this.desserts.indexOf(item)].id
+
+                        listar_prod = await axios.get(this.url + '/api/produtos_pedidos/produtos/pedido?fk_pedido=' + id_pedido + '&fk_empresa=' + sessionStorage.id_empresalogado)
+
+                        this.produtos = []
+                        this.soma = 0
+
+                        for (var i = 0; i < listar_prod.data.length; i++) {
+                            this.soma = parseFloat(this.soma) + parseFloat(listar_prod.data[i].valor_total),
+                                this.produtos.push(
+                                    {
+                                        id: listar_prod.data[i].id,
+                                        nome: listar_prod.data[i].nome,
+                                        qtd: listar_prod.data[i].qtd,
+                                        valor_unitario: parseFloat(listar_prod.data[i].valor_unitario.toFixed(2)).toLocaleString('pt-BR', { currency: 'BRL', minimumFractionDigits: 2 }),
+                                        valor_total: parseFloat(listar_prod.data[i].valor_total.toFixed(2)).toLocaleString('pt-BR', { currency: 'BRL', minimumFractionDigits: 2 }),
+                                        cod_prod: listar_prod.data[i].cod_prod,
+                                        tipo: listar_prod.data[i].tipo,
+                                        custo: listar_prod.data[i].custo,
+                                    },
+                                )
+                        }
+                        this.soma_prod = this.soma.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+
+
+                        this.concluir_anterior = this.editedItem.concluir
+                        this.prod_anterior = JSON.parse(JSON.stringify(this.produtos));
+
+                    },
+
+                    async deleteItem(item) {
+
+                        try {
+                            this.desativa_delete = true
+                            this.carregando = true
+
+                            if (sessionStorage.usuadm == '0') {
+                                this.snackbar = true
+                                this.text_aviso = 'Não é possivel excluir, usuário sem permissão'
+                                this.cor_aviso = "red"
+                                this.icon = "mdi-alert-circle-outline"
+                                return;
+                            }
+                            const index = this.desserts.indexOf(item)
+                            id = this.desserts[index].id
+                            mensagem = confirm('\nDeseja deletar o registro? \n(caso haja contas a receber vinculado, também será excluído)') && this.desserts.splice(index, 1)
+
+
+                            if (mensagem != false) {
+                                if (localStorage.control_est == "true" && listar_pedidos.data[index].concluido_por != '') {
+                                    mensagem_estor = confirm('Deseja estornar os produto para o estoque ?')
+                                    if (mensagem_estor != false) {
+                                        listar_prod = await axios.get(this.url + '/api/produtos_pedidos/produtos/pedido?fk_pedido=' + id + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                                        for (var i = 0; i < listar_prod.data.length; i++) {
+                                            axios.post(this.url + '/api/produtos/produtos/aumenta_qtd?Qtd=' + listar_prod.data[i].qtd + '&Id=' + listar_prod.data[i].cod_prod + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                                        }
+                                    }
+                                }
+
+                                await axios.delete(this.url + '/api/Contas_receber/Contas_receber/deletar_id_pedido?Id_pedido=' + id + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                                await axios.delete(this.url + '/api/produtos_pedidos/produtos_pedidos/delete_fk_pedido?fk_pedido=' + id + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                                await axios.delete(this.url + '/api/pedidos/pedidos/deletar?id=' + id + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                            }
+                            this.desativa_delete = false
+                            this.carregando = false
+                        } catch (err) {
+                            alert("Erro: " + err.message);
+                            this.carregando = false
+                            this.desativa_delete = false
+                        }
+                    },
+
+                    deleteItemConfirm() {
+                        this.produtos.splice(this.editedIndex_prod, 1)
+                        this.closeDelete_prod()
+                    },
+
+                    close() {
+                        this.dialog = false
+                        this.$nextTick(() => {
+                            this.editedItem = Object.assign({}, this.defaultItem)
+                            this.editedIndex = -1
+                        })
+                        this.soma = 0
+                        this.soma_prod = 0
+                    },
+
+                    closeDelete() {
+                        this.dialogDelete_prod = false
+                        this.$nextTick(() => {
+                            this.editedItem_prod = Object.assign({}, this.defaultItem_prod)
+                            this.editedIndex_prod = -1
+                        })
+                    },
+
+                    async save(item) {
+                        this.desativa_salvar = true
+                        function pesq_qtd(cod) {
+                            return cod.id === cod_produto
+                        }
+                        prod_emfalta = false
+                        this.valor_total_soma = 0
+                        this.custo_soma = 0
+
+
+
+                        //listar_produtos = await axios.get(this.url + '/api/produtos/listar/produtos?Fk_empresa=' + sessionStorage.id_empresalogado)
+
+                        listar_func_nome = await axios.get(this.url + '/api/funcionarios/listar/funcionarios_usunome?Usuario=' + this.editedItem.funcionario)
+
+                        try {
+                            if (this.editedIndex != -1) {
+                                if (listar_pedidos.data[this.editedIndex].concluir == 1 && listar_pedidos.data[this.editedIndex].prazo == '1') {
+                                    this.carregando = false
+                                    this.snackbar = true
+                                    this.text_aviso = 'Não é possivel alterar registro salvo como pagamento a prazo'
+                                    this.cor_aviso = "red"
+                                    this.icon = "mdi-alert-circle-outline"
+                                    return;
+                                }
+                            }
+
+                            this.carregando = true
+                            produtos = ''
+                            prod_naoexist = ''
+                            listar_todos_produtos = await axios.get(this.url + '/api/produtos/listar/produtos?Fk_empresa=' + sessionStorage.id_empresalogado)
+
+                            //verifica se é um novo cadastro,
+                            if (this.editedIndex == -1 || listar_pedidos.data[this.editedIndex].concluido_por == '') {
+                                concluido_por_usu = null
+                            } else {
+                                concluido_por_usu = listar_pedidos.data[this.editedIndex].concluido_por
+                            }
+
+
+                            for (var i = 0; i < this.produtos.length; i++) {
+                                if (typeof listar_todos_produtos.data.find(prod => prod.id === this.produtos[i].cod_prod) === "undefined") {
+
+                                    prod_naoexist = prod_naoexist + '\n' + this.produtos[i].nome + ', '
+                                }
+                            }
+
+
+                            if (prod_naoexist != '') {
+                                prod_emfalta = false
+                                this.carregando = false
+                                this.snackbar = true
+                                this.text_aviso = 'Não é possível salvar, os seguintes registros não estão cadastrados no sistema: \n   ' + prod_naoexist + ' Verifique !'
+                                this.cor_aviso = "red"
+                                this.icon = "mdi-alert-circle-outline"
+                                return;
+                            }
+
+
+
+                            // Verifica se o produto tem em estoque
+                            if (this.prod_anterior.length == 0) {
+                                this.prod_anterior = this.produtos.slice();
+                            }
+
+                            for (var i = 0; i < this.produtos.length; i++) {
+
+
+                                if (listar_todos_produtos.data.find(prod => prod.id === this.produtos[i].cod_prod).tipo != 'Serviço' && this.editedItem.concluir == true && localStorage.control_est == "true") {
+
+                                    var cod_produto = String(this.produtos[i].cod_prod)
+
+                                    qtd_em_estoque = listar_todos_produtos.data.find(pesq_qtd);
+
+                                    if (concluido_por_usu == null || typeof this.prod_anterior[i] === "undefined") {
+                                        if ((parseFloat(qtd_em_estoque.qtd) - parseFloat(this.produtos[i].qtd)) < 0) {
+                                            prod_emfalta = true
+
+                                            var produtos = produtos + '\n' + this.produtos[i].nome + ', '
+                                        } else {
+                                            listar_todos_produtos.data.find(pesq_qtd).qtd = String(parseFloat(qtd_em_estoque.qtd) - parseFloat(this.produtos[i].qtd))
+                                        }
+                                    } else if (this.produtos[i].qtd > this.prod_anterior[i].qtd) {
+                                        this.qtd_alt = this.produtos[i].qtd - this.prod_anterior[i].qtd
+
+                                        if ((parseFloat(qtd_em_estoque.qtd) - parseFloat(this.qtd_alt)) < 0) {
+                                            prod_emfalta = true
+
+                                            var produtos = produtos + '\n' + this.produtos[i].nome + ', '
+                                        }
+
+
+                                    }
+                                }
+                            }
+
+                            if (prod_emfalta == true && localStorage.control_est == "true") {
+                                prod_emfalta = false
+                                this.carregando = false
+                                this.snackbar = true
+                                this.text_aviso = 'Não é possível salvar, os seguintes produtos estão em falta no estoque: \n   ' + produtos + ' Verifique !'
+                                this.cor_aviso = "red"
+                                this.icon = "mdi-alert-circle-outline"
+                                return;
+                            }
+
+
+                            if (this.data == "" || this.editedItem.hora == "") {
+                                this.erro_Preench = 'Preenchimento obrigatório'
+                                this.carregando = false
+                            }
+                            else {
+
+                                if (this.editedIndex > -1) {
+                                    Object.assign(this.desserts[this.editedIndex], this.editedItem)
+
+                                    data = this.desserts[this.editedIndex].data
+
+                                    dia = data.slice(0, 2);
+                                    mes = data.slice(3, 5);
+                                    ano = data.slice(6, 10);
+                                    hora = this.desserts[this.editedIndex].hora //data.slice(13, 18);
+
+                                    data = ano + "-" + mes + "-" + dia + " " + hora
+
+                                    concluir = this.desserts[this.editedIndex].concluir
+                                    if (concluir == true) {
+                                        concluir = '1'
+                                        concluir_desc = 'Concluído'
+                                        concluido_por = sessionStorage.id_usulogado
+                                    }
+                                    else {
+                                        concluir = '0'
+                                        concluir_desc = 'Em aberto'
+                                        concluido_por = null
+                                    }
+
+                                    if (this.editedItem.prazo == true) {
+                                        prazo = '1'
+                                    } else {
+                                        prazo = '0'
+                                    }
+
+
+
+                                    if (this.editedItem.data_venc != '') {
+                                        data_vencimento = this.editedItem.data_venc
+                                        dia = data_vencimento.slice(0, 2);
+                                        mes = data_vencimento.slice(3, 5);
+                                        ano = data_vencimento.slice(6, 10);
+
+                                        //data_vencimento = ano + "-" + mes + "-" + dia
+                                        data_vencimento = mes + '/' + dia + '/' + ano
+                                    } else {
+                                        data_vencimento = 'null'
+                                    }
+
+                                    forma_pagamento = this.editedItem.pag
+
+                                    if (typeof this.editedItem.qtd_parcela === "undefined" || this.editedItem.qtd_parcela == '') {
+                                        parcelas = 'null'
+                                    } else {
+                                        parcelas = this.editedItem.qtd_parcela
+                                    }
+
+                                    if (parseFloat(parcelas) < 1) {
+                                        parcelas = '1'
+                                    }
+
+                                    if (typeof this.editedItem.pag === "undefined") {
+                                        forma_pagamento = ''
+                                    } else {
+                                        forma_pagamento = this.editedItem.pag
+                                    }
+
+
+
+
+
+                                    //    if (this.editedItem.desc_ataca == true) {
+                                    //        desc_ataca = '1'
+                                    //    } else {
+                                    desc_ataca = '0'
+                                    //    }
+
+                                    bairro = this.desserts[this.editedIndex].bairro
+                                    descricao = this.desserts[this.editedIndex].descricao.replaceAll("\n", "\\n")
+                                    cliente = this.desserts[this.editedIndex].cliente
+                                    celular = this.desserts[this.editedIndex].celular
+                                    endereco = this.desserts[this.editedIndex].endereco
+                                    cidade = this.desserts[this.editedIndex].cidade
+                                    if (this.desserts[this.editedIndex].cod_cli == '') {
+                                        cod_cli = 'null'
+                                    } else {
+                                        cod_cli = this.desserts[this.editedIndex].cod_cli
+                                    }
+
+
+                                    salvar_resq = await axios.post(this.url + '/api/pedidos/pedidos/alterar?desc_ataca=' + desc_ataca + '&bairro=' + bairro + '&cliente=' + cliente + '&data=' + data + '&concluir=' + concluir + '&endereco=' + endereco + '&cidade=' + cidade + '&celular=' + celular + '&Id=' + id_pedido + '&descricao=' + descricao + '&fk_cod_cli=' + cod_cli + '&fk_funcionario=' + listar_func_nome.data[0].id + '&concluido_por=' + concluido_por + '&prazo=' + prazo + '&parcelas=' + parcelas + '&data_vencimento=' + data_vencimento + '&forma_pagamento=' + forma_pagamento + '&fk_empresa=' + sessionStorage.id_empresalogado)
+
+                                }
+                                else {
+                                    this.desserts.push(this.editedItem)
+
+                                    if (this.editedItem.prazo == true) {
+                                        prazo = '1'
+                                    } else {
+                                        prazo = '0'
+                                    }
+
+                                    if (typeof this.editedItem.qtd_parcela === "undefined" || this.editedItem.qtd_parcela == '') {
+                                        parcelas = 'null'
+                                    } else {
+                                        parcelas = this.editedItem.qtd_parcela
+                                    }
+
+                                    if (parseFloat(parcelas) < 1) {
+                                        parcelas = '1'
+                                    }
+
+                                    if (this.editedItem.data_venc != '') {
+                                        data_vencimento = this.editedItem.data_venc
+                                        dia = data_vencimento.slice(0, 2);
+                                        mes = data_vencimento.slice(3, 5);
+                                        ano = data_vencimento.slice(6, 10);
+
+                                        //data_vencimento = ano + "-" + mes + "-" + dia
+                                        data_vencimento = mes + '/' + dia + '/' + ano
+                                    } else {
+                                        data_vencimento = 'null'
+                                    }
+
+                                    forma_pagamento = this.editedItem.pag
+
+                                    data = this.desserts[this.desserts.length - 1].data
+                                    dia = data.slice(0, 2);
+                                    mes = data.slice(3, 5);
+                                    ano = data.slice(6, 10);
+                                    hora = this.editedItem.hora //data.slice(13, 18);
+                                    data = ano + "-" + mes + "-" + dia + " " + hora
+
+                                    concluir = this.desserts[this.desserts.length - 1].concluir
+                                    if (concluir == true) {
+                                        concluir = '1'
+                                        this.desserts.concluir_desc = 'Concluído'
+                                        concluido_por = sessionStorage.id_usulogado
+                                    }
+                                    else {
+                                        concluir = '0'
+                                        this.desserts.concluir_desc = 'Em aberto'
+                                        concluido_por = null
+                                    }
+                                    //  if (this.editedItem.desc_ataca == true) {
+                                    //      desc_ataca = '1'
+                                    //  } else {
+                                    desc_ataca = '0'
+                                    //  }
+
+
+                                    bairro = this.desserts[this.desserts.length - 1].bairro
+                                    cliente = this.desserts[this.desserts.length - 1].cliente
+                                    descricao = this.desserts[this.desserts.length - 1].descricao.replaceAll("\n", "\\n")
+                                    celular = this.desserts[this.desserts.length - 1].celular
+                                    endereco = this.desserts[this.desserts.length - 1].endereco
+                                    cidade = this.desserts[this.desserts.length - 1].cidade
+
+                                    if (typeof this.desserts[this.desserts.length - 1].cod_cli === "undefined") {
+                                        cod_cli = 'null'
+                                    } else {
+                                        cod_cli = this.desserts[this.desserts.length - 1].cod_cli
+                                    }
+
+
+                                    salvar_resq = await axios.post(this.url + '/api/pedidos/pedidos/salvar?desc_ataca=' + desc_ataca + '&bairro=' + bairro + '&data=' + data + '&concluir=' + concluir + '&endereco=' + endereco + '&cidade=' + cidade + '&celular=' + celular + '&descricao=' + descricao + '&cliente=' + cliente + '&fk_cod_cli=' + cod_cli + '&Fk_empresa=' + sessionStorage.id_empresalogado + '&fk_funcionario=' + listar_func_nome.data[0].id + '&concluido_por=' + concluido_por + '&prazo=' + prazo + '&parcelas=' + parcelas + '&data_vencimento=' + data_vencimento + '&forma_pagamento=' + forma_pagamento)
+
+                                }
+                                for (var i = 0; i < this.produtos.length; i++) {
+                                    id = this.produtos[i].id
+                                    nome = this.produtos[i].nome
+                                    qtd = this.produtos[i].qtd
+                                    qtd = qtd.toString().replace(",", ".");
+                                    valor_unitario = this.produtos[i].valor_unitario
+                                    if (valor_unitario.indexOf(",") != -1) {
+                                        valor_unitario = valor_unitario.toString().replace('.', '').replace(',', '.')
+                                    }
+                                    cod_prod = this.produtos[i].cod_prod
+
+                                    valor_total = this.produtos[i].valor_total //.toString().replace(".", ",");
+
+                                    if (parseFloat(this.produtos[i].custo.toString().replaceAll(",", "").replaceAll(".", "").length) > 5) {
+                                        this.produtos[i].custo = this.produtos[i].custo.toString().replace(".", "");
+                                    }
+                                    this.produtos[i].custo = this.produtos[i].custo.toString().replace(",", ".");
+
+                                    if (parseFloat(this.produtos[i].qtd.toString().replaceAll(",", "").replaceAll(".", "").length) > 5) {
+                                        this.this.produtos[i].qtd = this.produtos[i].qtd.toString().replace(".", "");
+                                    }
+                                    this.produtos[i].qtd = this.produtos[i].qtd.toString().replace(",", ".");
+
+
+
+                                    //localiza o custo do produto adicionado no pedido
+                                    custo = listar_todos_produtos.data.find(prod => prod.id === this.produtos[i].cod_prod).custo
+
+                                    // substitui a virgula por ponto para salvar no banco
+                                    if (parseFloat(custo.toString().replaceAll(",", "").replaceAll(".", "").length) > 5) {
+                                        custo = custo.toString().replace(".", "");
+                                    }
+                                    custo = custo.toString().replace(",", ".");
+
+
+                                    custo = (parseFloat(custo) * parseFloat(this.produtos[i].qtd)).toFixed(2)
+
+                                    this.custo_soma = this.custo_soma + parseFloat(custo)
+
+                                    // if (parseFloat(valor_total) > parseFloat(999)) { //.toString().replace(".", "")
+                                    if (parseInt(valor_total.toString().replaceAll(",", "").replaceAll(".", "").length) > 5) {
+                                        valor_total = valor_total.toString().replace(".", "");
+                                    }
+                                    valor_total = valor_total.toString().replace(",", ".");
+
+
+                                    this.valor_total_soma = this.valor_total_soma + parseFloat(valor_total)
+
+                                    /* if (typeof custo != "undefined") {
+                                         if (parseInt(custo.toString().replaceAll(",", "").replaceAll(".", "").length) > 5) {
+                                             custo = custo.toString().replace(".", "");
+                                         }
+                                         custo = custo.toString().replace(",", ".");
+                                     }*/
+
+                                    if (typeof this.produtos[i].id != "undefined") {
+                                        salvar_resq = await axios.post(this.url + '/api/produtos_pedidos/produtos_pedidos/alterar?nome=' + nome + '&qtd=' + qtd + '&valor_unitario=' + valor_unitario + '&valor_total=' + valor_total + '&id=' + id + '&cliente=' + cliente + '&cod_prod=' + cod_prod + '&fk_empresa=' + sessionStorage.id_empresalogado + '&custo=' + custo)
+                                    }
+                                    else {
+
+                                        if (this.editedIndex == -1) {
+                                            listar_maior_id = await axios.get(this.url + '/api/pedidos/pedidos/maior_id?Fk_empresa=' + sessionStorage.id_empresalogado)
+                                            id_pedido = listar_maior_id.data[0].id
+                                        }
+
+                                        salvar_resq = await axios.post(this.url + '/api/produtos_pedidos/produtos_pedidos/salvar?nome=' + nome + '&qtd=' + qtd + '&valor_unitario=' + valor_unitario + '&valor_total=' + valor_total + '&fk_pedido=' + id_pedido + '&cod_prod=' + cod_prod + '&Fk_empresa=' + sessionStorage.id_empresalogado + '&custo=' + custo)
+
+                                    }
+                                }
+                                // Altera a quantidade no estoque
+                                for (var i = 0; i < this.produtos.length; i++) {
+                                    if (listar_todos_produtos.data.find(prod => prod.id === this.produtos[i].cod_prod).tipo != 'Serviço' && this.editedItem.concluir == true && localStorage.control_est == "true") {
+
+                                        if (concluido_por_usu == null || typeof this.prod_anterior[i] === "undefined") {
+                                            salvar_resq = await axios.post(this.url + '/api/produtos/produtos/alterar_qtd?Qtd=' + this.produtos[i].qtd + '&Id=' + this.produtos[i].cod_prod + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                                        } else if (this.produtos[i].qtd > this.prod_anterior[i].qtd) {
+                                            this.qtd_alt = this.produtos[i].qtd - this.prod_anterior[i].qtd
+
+                                            salvar_resq = await axios.post(this.url + '/api/produtos/produtos/alterar_qtd?Qtd=' + this.qtd_alt + '&Id=' + this.produtos[i].cod_prod + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                                        } else if (this.produtos[i].qtd < this.prod_anterior[i].qtd) {
+                                            this.qtd_alt = this.prod_anterior[i].qtd - this.produtos[i].qtd
+
+                                            salvar_resq = await axios.post(this.url + '/api/produtos/produtos/aumenta_qtd?Qtd=' + this.qtd_alt + '&Id=' + this.produtos[i].cod_prod + '&fk_empresa=' + sessionStorage.id_empresalogado)
+
+                                        }
+
+
+
+                                    }
+                                }
+
+                                //Lança contas a receber
+                                //data_vencimento = new Date(data_vencimento).getFullYear() + "-" + ((new Date(data_vencimento).getMonth() + 1)) + "-" + (new Date(data_vencimento).getDate() + 1)
+                                data_vencimento = (new Date(data_vencimento).getMonth() + 1) + '/' + new Date(data_vencimento).getDate() + '/' + new Date(data_vencimento).getFullYear()
+                                if (concluido_por_usu == null && this.editedItem.prazo == true && this.editedItem.concluir == true) {
+                                    for (var i = 1; i <= parseFloat(parcelas); i++) {
+
+                                        salvar_resq = await axios.post(this.url + '/api/Contas_receber/Contas_receber/salvar?vencimento=' + data_vencimento + '&parcela=' + i + '/' + parcelas + '&valor=' + parseFloat(this.valor_total_soma) / parseFloat(parcelas) + '&fk_empresa=' + sessionStorage.id_empresalogado + '&fk_pedido=' + id_pedido + '&custo=' + parseFloat(this.custo_soma) / parseFloat(parcelas))
+
+                                        //data_vencimento = new Date(data_vencimento).getFullYear() + "-" + ((new Date(data_vencimento).getMonth() + 2)) + "-" + (new Date(data_vencimento).getDate())
+                                        data_vencimento = (new Date(data_vencimento).getMonth() + 2) + '/' + new Date(data_vencimento).getDate() + '/' + new Date(data_vencimento).getFullYear()
+
+                                    }
+                                }
+                            }
+
+
+                            //alert("Salvo com sucesso !");
+                            this.snackbar = true
+                            this.text_aviso = 'Salvo com sucesso !'
+                            this.cor_aviso = "success"
+                            this.icon = "mdi-mdi-check-circle"
+                            //window.open('http://api.whatsapp.com/send?phone=+5516993902962&text=Nova entrega agendada no dia ' + dia + '/' + mes + '/' + ano + ' às ' + hora + ' verifique!  ');
+
+                            this.close()
+                            this.desativa_salvar = false
+
+                            if (this.filtro == true) {
+                                this.pesq_pedido()
+                            } else {
+                                this.initialize()
+                            }
+
+                        }
+                        catch (err) {
+                            alert("Erro: " + err.message);
+                            this.carregando = false
+                            this.desativa_salvar = false
+                        }
+                    },
+
+
+
+                    editItem_prod(item) {
+                        this.editedIndex_prod = this.produtos.indexOf(item)
+                        this.editedItem_prod = Object.assign({}, item)
+                        this.dialog_prod = true
+                    },
+
+                    deleteItem_prod(item) {
+                        if (this.editedIndex != -1) {
+                            if (sessionStorage.usuadm == '0' && listar_pedidos.data[this.editedIndex].concluido_por != '') {
+                                this.snackbar = true
+                                this.text_aviso = 'Não é possivel excluir, usuário sem permissão'
+                                this.cor_aviso = "red"
+                                this.icon = "mdi-alert-circle-outline"
+                                return;
+                            }
+                        }
+
+                        const index = this.produtos.indexOf(item)
+                        mensagem = confirm('Deseja deletar o registro ? (esta ação é permanente ! )') && this.produtos.splice(index, 1)
+
+                        if (mensagem != false) {
+                            if (typeof listar_prod != "undefined" && listar_prod.data.length > 0) {
+                                axios.delete(this.url + '/api/produtos_pedidos/produtos_pedidos/delete?id=' + listar_prod.data[index].id + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                                this.exibe_total()
+                            } else {
+                                this.exibe_total()
+                            }
+
+                            if (this.editedIndex != -1) {
+                                if (localStorage.control_est == "true" && listar_pedidos.data[this.editedIndex].concluido_por != '') {
+                                    mensagem_estor = confirm('Deseja estornar o produto para o estoque ?')
+                                    if (mensagem_estor != false) {
+                                        axios.post(this.url + '/api/produtos/produtos/aumenta_qtd?Qtd=' + item.qtd + '&Id=' + item.cod_prod + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                                    }
+                                }
+                            }
+                        }
+                    },
+
+                    deleteItemConfirm_prod() {
+                        this.produtos.splice(this.editedIndex_prod, 1)
+                        this.closeDelete_prod()
+                    },
+
+                    close_prod() {
+                        this.dialog_prod = false
+                        this.exib_erro_cod_prod = false,
+                            this.exib_erro_valor_unitario = false,
+                            this.$nextTick(() => {
+                                this.editedItem_prod = Object.assign({}, this.defaultItem_prod)
+                                this.editedIndex_prod = -1
+                            })
+                    },
+
+                    closeDelete_prod() {
+                        this.dialogDelete_prod = false
+                        this.$nextTick(() => {
+                            this.editedItem_prod = Object.assign({}, this.defaultItem_prod)
+                            this.editedIndex_prod = -1
+                        })
+                    },
+
+                    async save_prod() {
+                        //listar_produtos = await axios.get(this.url + '/api/produtos/listar/produtos_id?Id=' + this.editedItem_prod.cod_prod + '&Fk_empresa=' + sessionStorage.id_empresalogado)
+                        prod_selecionado = listar_produtos.data.find(prod => prod.id === this.editedItem_prod.cod_prod)
+
+                        if (this.editedItem_prod.qtd == '') {
+                            this.editedItem_prod.qtd = '1'
+                        }
+
+                        if (prod_selecionado != null) {
+                            if (this.editedItem_prod.cod_prod != "") {
+                                if (this.editedItem_prod.valor_unitario != "") {
+
+                                    if (this.editedItem_prod.valor_unitario.indexOf(",") != -1) {
+                                        this.editedItem_prod.valor_unitario = this.editedItem_prod.valor_unitario.replace('.', '').replace(',', '.')
+                                    }
+
+                                    somar_total = parseFloat(this.editedItem_prod.qtd) * parseFloat(this.editedItem_prod.valor_unitario.toString().replace(",", "."))
+                                    this.editedItem_prod.valor_total = somar_total.toLocaleString('pt-br', { minimumFractionDigits: 2 });;
+
+                                    this.editedItem_prod.custo = prod_selecionado.custo
+                                    if (this.editedIndex_prod > -1) {
+                                        Object.assign(this.produtos[this.editedIndex_prod], this.editedItem_prod)
+
+                                        this.close_prod()
+
+                                        // this.soma = parseFloat(this.editedItem_prod.valor_total)
+                                        // this.soma_prod = this.soma.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+
+                                    } else {
+                                        this.produtos.push(this.editedItem_prod)
+                                        this.close_prod()
+
+
+                                        //  this.soma = this.soma + parseFloat(this.editedItem_prod.valor_total)
+                                        //  this.soma_prod = this.soma.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+
+                                    }
+
+                                    this.exibe_total()
+                                } else {
+                                    this.exib_erro_valor_unitario = true
+                                }
+                            } else {
+                                this.exib_erro_cod_prod = true
+                            }
+                        } else {
+                            this.snackbar = true
+                            this.text_aviso = 'Código do produto não encontrado, Verifique !'
+                            this.cor_aviso = "red"
+                            this.icon = "mdi-alert-circle-outline"
+                        }
+
+                    },
+
+                    getColor(concluir_desc) {
+                        if (concluir_desc == 'Concluído') return 'green'
+                        else if (concluir_desc == 'Em aberto') return 'yellow'
+                        //else return 'red'
+                    },
+
+                    textColor(concluir_desc) {
+                        if (concluir_desc == 'Concluído') return 'white'
+                        else if (concluir_desc == 'Em aberto') return '#757575'
+                        //else return 'red'
+                    },
+
+                    async pesq_pedido() {
+
+                        if (this.funcionario_pesq == null) {
+                            this.funcionario_pesq = ''
+                        }
+                        if (this.cli_pesq == null) {
+                            this.cli_pesq = ''
+                        }
+                        if (this.pesq_nome_prod == null) {
+                            this.pesq_nome_prod = ''
+                        }
+
+
+
+
+                        listar_pedidos = await axios.get(this.url + '/api/pedidos/pedidos/pesquisar?data_ini=' + this.data_ini + '&data_fim=' + this.data_fim + '&Fk_empresa=' + sessionStorage.id_empresalogado + '&usuario=' + this.funcionario_pesq + '&cliente_pesq=' + this.cli_pesq + '&nome_prod=' + this.pesq_nome_prod)
+
+                        this.desserts = []
+                        for (var i = 0; i < listar_pedidos.data.length; i++) {
+                            if (listar_pedidos.data[i].concluir == 1) {
+                                concluido = true
+                                concluir_desc = 'Concluído'
+                            }
+                            else {
+                                concluido = false
+                                concluir_desc = 'Em aberto'
+                            }
+
+                            /*  if (listar_pedidos.data[i].desc_ataca == 1) {
+                                  desc_ataca = true
+                              } else {
+                                  desc_ataca = false
+                              }
+                              */
+                            data = listar_pedidos.data[i].data,
+
+                                dia = data.slice(8, 10);
+                            mes = data.slice(5, 7);
+                            ano = data.slice(0, 4);
+                            hora = data.slice(11, 16);
+
+                            data = dia + "/" + mes + "/" + ano //+ " - " + hora
+
+                            if (listar_pedidos.data[i].prazo == 1) {
+                                prazo = true
+                            }
+                            else {
+                                prazo = false
+                            }
+
+                            data_vencimento = listar_pedidos.data[i].data_vencimento
+
+                            if (data_vencimento != '') {
+                                dia = data_vencimento.slice(8, 10);
+                                mes = data_vencimento.slice(5, 7);
+                                ano = data_vencimento.slice(0, 4);
+                                data_vencimento = dia + "/" + mes + "/" + ano
+                            }
+
+                            this.desserts.push(
+                                {
+                                    bairro: listar_pedidos.data[i].bairro,
+                                    data: data,
+                                    hora: hora,
+                                    cliente: listar_pedidos.data[i].cliente,
+                                    concluir: concluido,
+                                    //desc_ataca: desc_ataca,
+                                    concluir_desc: concluir_desc,
+                                    celular: listar_pedidos.data[i].celular,
+                                    id: listar_pedidos.data[i].id,
+                                    descricao: listar_pedidos.data[i].descricao.replaceAll("\\n", "\n"),
+                                    endereco: listar_pedidos.data[i].endereco,
+                                    cidade: listar_pedidos.data[i].cidade,
+                                    cod_cli: listar_pedidos.data[i].fk_cod_cli,
+                                    funcionario: listar_pedidos.data[i].usuario,
+                                    prazo: prazo,
+                                    data_venc: data_vencimento,
+                                    qtd_parcela: listar_pedidos.data[i].parcelas,
+                                    pag: listar_pedidos.data[i].forma_pagamento,
+                                    valor: parseFloat(listar_pedidos.data[i].valor_total).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }),
+                                }
+                            )
+
+                        }
+
+                        this.dialog_pesq = false
+
+                        this.filtro = true
+                    },
+
+                    async somar_total() {
+                        //listar_produtos = await axios.get(this.url + '/api/produtos/listar/produtos_nome_igual?Nome=' + this.editedItem_prod.nome + '&fk_empresa=' + sessionStorage.id_empresalogado)
+
+                        prod_selecionado = listar_produtos.data.find(prod => prod.produto === this.editedItem_prod.nome)
+
+                        this.editedItem_prod.cod_prod = prod_selecionado.id
+
+                        this.editedItem_prod.valor_unitario = prod_selecionado.valor_pessoa_fisica.toString().replace('.', '').replace(',', '.')
+
+                        somar_total = parseFloat(this.editedItem_prod.qtd) * parseFloat(this.editedItem_prod.valor_unitario)
+                        this.editedItem_prod.valor_total = somar_total.toLocaleString('pt-br', { minimumFractionDigits: 2 });;
+                    },
+
+                    async preenche_prod() {
+                        //listar_produtos = await axios.get(this.url + '/api/produtos/listar/produtos_id?Id=' + this.editedItem_prod.cod_prod + '&Fk_empresa=' + sessionStorage.id_empresalogado)
+                        prod_selecionado = listar_produtos.data.find(prod => prod.id === this.editedItem_prod.cod_prod)
+
+                        this.editedItem_prod.cod_prod = prod_selecionado.id
+                        //   if (this.editedItem.desc_ataca == true) {
+                        //      this.editedItem_prod.valor_unitario = parseFloat(listar_produtos.data[0].valor_pessoa_juridica.toString().replace(",", ".")).toLocaleString('pt-br', { minimumFractionDigits: 2 });;
+                        //  } else {
+                        //this.editedItem_prod.valor_unitario = parseFloat(prod_selecionado.valor_pessoa_fisica.toString().replace(",", ".")).toLocaleString('pt-br', { minimumFractionDigits: 2 });;
+                        //  }
+
+                        if (this.editedItem_prod.valor_unitario == '') {
+                            this.editedItem_prod.valor_unitario = prod_selecionado.valor_pessoa_fisica
+                        }
+
+                        valor_unitario = this.editedItem_prod.valor_unitario.toString().replace('.', '').replace(',', '.')
+
+                        somar_total = parseFloat(this.editedItem_prod.qtd) * parseFloat(valor_unitario)
+                        this.editedItem_prod.valor_total = somar_total.toLocaleString('pt-br', { minimumFractionDigits: 2 });;
+                        this.editedItem_prod.nome = prod_selecionado.produto
+                    },
+
+                    async preenche_cli() {
+                        listar_cli = await axios.get(this.url + '/api/clientes/listar/clientes_pesq?Id=' + this.cli_selec.split("-")[0] + '&Nome&Cpf_cnpj&Fk_empresa=' + sessionStorage.id_empresalogado)
+
+                        if (this.cli_selec != '') {
+                            this.editedItem.cod_cli = listar_cli.data[0].id
+                            this.editedItem.cliente = listar_cli.data[0].nome
+                            this.editedItem.celular = listar_cli.data[0].celular
+                            this.editedItem.endereco = listar_cli.data[0].endereco
+                            this.editedItem.bairro = listar_cli.data[0].bairro
+                            this.editedItem.cidade = listar_cli.data[0].cidade
+                            this.editedItem.descricao = listar_cli.data[0].descricao.replaceAll("\\n", "\n")
+                        }
+
+                        this.dialog_cli = false
+
+                    },
+
+                    exibe_total() {
+                        total = 0
+                        for (var i = 0; i < this.produtos.length; i++) {
+                            if (parseFloat(this.produtos[i].valor_total.toString().replaceAll(",", "").replaceAll(".", "").length) > 5) {
+                                total = total + parseFloat(this.produtos[i].valor_total.toString().replace(".", ""))
+                            } else {
+                                total = total + parseFloat(this.produtos[i].valor_total.toString().replace(",", "."))
+                            }
+                        }
+                        this.soma_prod = total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+                    },
+
+
+
+
+                    /*    preench_func() {
+                            aa = 'gg'
+                            return aa
+                        },*/
+
+
+
+                    /* async info_empresa() {
+                         listar = await axios.get(this.url + '/api/empresa_config/listar/empresa_config?Id_empresa=' + sessionStorage.id_empresalogado)
+                         this.nome_empresa = listar.data[0].nome
+                     },
+                     */
+
+                    imprimir() {
+
+
+                        if (localStorage.imp_termica == 'true') {
+                            var doc = new jsPDF({
+                                format: [58, 800]
+                            })
+                            doc.setFontSize(9);
+                            doc.text(sessionStorage.nome_empresa, 28, 6, 'center');
+                            doc.setFontSize(8);
+                            doc.text(sessionStorage.telefone, 28, 10, 'center');
+                            doc.setFontSize(8);
+                            doc.text(sessionStorage.endereco, 29, 14, 'center');
+                            if (sessionStorage.cnpj != '') {
+                                doc.text('CNPJ: ' + sessionStorage.cnpj, 29, 18, 'center');
+                            }
+                            doc.text('____________________________________________________________________________________________________________________________________________________________________________', 0, 19);
+                            l = 23
+                            doc.text(this.editedItem.data + ' - ' + this.editedItem.hora, 1, l);
+                            l = l + 4
+                            doc.text('Cliente: ' + this.editedItem.cliente.substr(0, 30), 1, l);
+                            if (this.editedItem.celular != '') {
+                                doc.text('Fone: ' + this.editedItem.celular, 1, l = l + 4);
+                            }
+                            if (this.editedItem.endereco != '') {
+                                doc.text('End: ' + this.editedItem.endereco.substr(0, 28), 1, l = l + 4);
+                            }
+                            if (this.editedItem.bairro != '') {
+                                doc.text(this.editedItem.endereco.substr(28, this.editedItem.endereco.length) + 'Bairro: ' + this.editedItem.bairro, 1, l = l + 4);
+                            } else if (this.editedItem.endereco.substr(28, this.editedItem.endereco.length) != '') {
+                                doc.text(this.editedItem.endereco.substr(28, this.editedItem.endereco.length), 1, l = l + 4);
+                            }
+                            if (this.editedItem.cidade != '') {
+                                doc.text('Cidade: ' + this.editedItem.cidade.substr(0, 43), 1, l = l + 4);
+                            }
+
+                            doc.setFontSize(9);
+                            doc.text('___________________________________________________________________________________________________________________________________________________________________________', 0, l = l + 2);
+                            doc.text('Forma de pagamento:  ' + this.editedItem.pag, 1, l = l + 4);
+
+                            doc.text('____________________________________________________________________________________________________________________________________________________________________________', 0, l = l + 2);
+
+                            doc.setFontSize(9);
+                            doc.text('Descrição', 1, l = l + 4);
+                            doc.text('Valor', 42, l);
+                            l = l + 4
+                            for (var i = 0; i < this.produtos.length; i++) {
+
+                                doc.setFontSize(7);
+                                doc.text(this.produtos[i].nome.substr(0, 18), 1, l);
+
+                                if (parseInt(this.produtos[i].valor_unitario.toString().replaceAll(",", "").replaceAll(".", "").length) > 5) {
+                                    doc.text(parseFloat(this.produtos[i].valor_unitario.toString().replace(".", "")).toFixed(2), 46, l, 'center');
+                                } else {
+                                    doc.text(parseFloat(this.produtos[i].valor_unitario.toString().replace(",", ".")).toFixed(2), 46, l, 'center');
+                                }
+
+
+                                l = l + 3
+                                doc.text('-------------------------------------------------------------------------', 1, l);
+                                l = l + 3
+
+
+                            }
+                            doc.text('____________________________________________________________________________________________________________________________________________________________________________', 210, l - 2);
+                            doc.setFontSize(11);
+                            doc.text('               TOTAL:  ' + this.soma_prod, 3, l = l + 4);
+
+                            doc.save('Recibo.pdf')
+                        } else {
+                            //impressão folha a4
+                            var doc = new jsPDF({
+
+                            })
+                            doc.setFontSize(11);
+                            doc.text(sessionStorage.nome_empresa, 100, 8, 'center');
+                            doc.setFontSize(10);
+                            doc.text(sessionStorage.telefone, 100, 13, 'center');
+                            doc.text(sessionStorage.endereco, 101, 18, 'center');
+                            if (sessionStorage.cnpj != '') {
+                                doc.text('CNPJ: ' + sessionStorage.cnpj, 101, 23, 'center');
+                            }
+                            doc.text('_______________________________________________________________________________________________________', 3, 25);
+                            l = 31
+                            doc.text('Cliente: ' + this.editedItem.cliente, 3, l);
+                            if (this.editedItem.celular != '') {
+                                doc.text('Fone: ' + this.editedItem.celular, 3, l = l + 6);
+                            }
+                            if (this.editedItem.endereco != '') {
+                                doc.text('End: ' + this.editedItem.endereco, 3, l = l + 6);
+                            }
+                            if (this.editedItem.bairro != '') {
+                                doc.text('Bairro: ' + this.editedItem.bairro, 3, l = l + 6);
+                            }
+                            if (this.editedItem.cidade != '') {
+                                doc.text('Cidade: ' + this.editedItem.cidade.substr(0, 43), 3, l = l + 6);
+                            }
+
+                            doc.setFontSize(11);
+                            doc.text('______________________________________________________________________________________________', 3, l = l + 4);
+                            doc.text('Forma de pagamento:  ' + this.editedItem.pag, 3, l = l + 6);
+                            doc.text(this.editedItem.data + ' - ' + this.editedItem.hora, 70, l);
+                            doc.text('______________________________________________________________________________________________', 3, l = l + 4);
+
+                            doc.text('Descrição', 5, l = l + 6);
+                            doc.text('Valor', 175, l);
+                            l = l + 6
+                            cont = 0
+                            page = 1
+                            qtd_reg = 23
+
+                            for (var i = 0; i < this.produtos.length; i++) {
+
+                                doc.setFontSize(9);
+                                doc.text(this.produtos[i].nome.substr(0, 60), 5, l);
+
+                                if (parseInt(this.produtos[i].valor_unitario.toString().replaceAll(",", "").replaceAll(".", "").length) > 5) {
+                                    doc.text(parseFloat(this.produtos[i].valor_unitario.toString().replace(".", "")).toFixed(2), 179, l, 'center');
+                                } else {
+                                    doc.text(parseFloat(this.produtos[i].valor_unitario.toString().replace(",", ".")).toFixed(2), 179, l, 'center');
+                                }
+
+                                l = l + 5
+                                doc.text('------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------', 3, l);
+                                l = l + 5
+
+                                cont = cont + 1
+                                if (cont > qtd_reg) {
+                                    qtd_reg = 25
+                                    page = page + 1
+                                    doc.addPage();
+                                    doc.setPage(page)
+                                    l = 10
+                                    cont = 0
+                                }
+
+                            }
+                            doc.setFontType('bold')
+                            doc.text('___________________________________________________________________________________________________________________', 3, l - 6);
+                            doc.setFontSize(15);
+                            doc.text('TOTAL:  ' + this.soma_prod, 150, l = l + 6);
+
+                            doc.save('Recibo.pdf')
+                        }
+
+                    },
+
+                    async imprimir_relatorio() {
+
+                        var doc = new jsPDF('portrait', 'pt', 'a4');
+                        doc.setFontSize(13);
+                        doc.text('Agenda', 3, 22);
+                        doc.text('____________________________________________________________________________________________________________________________________________________________________________', 0, 35);
+                        doc.setFontSize(10);
+                        doc.text('Status', 3, 51);
+                        doc.text('Data', 59, 51);
+                        doc.text('Horário', 120, 51);
+                        doc.text('Cliente', 160, 51);
+                        doc.text('Endereço', 286, 51);
+                        doc.text('Bairro', 435, 51);
+                        doc.text('Cidade', 510, 51);
+                        doc.text('______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________', 0, 58);
+                        l = 65
+                        cont = 0
+                        page = 1
+                        qtd_reg = 25
+
+                        for (var i = 0; i < this.desserts.length; i++) {
+                            doc.setFontSize(8);
+                            doc.text('______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________', 0, l - 7);
+                            doc.text(this.desserts[i].concluir_desc, 3, l + 3);
+                            doc.text(this.desserts[i].data, 60, l + 3);
+                            doc.text(this.desserts[i].hora, 123, l + 3);
+                            doc.text(this.desserts[i].cliente.substr(0, 27), 161, l + 3);
+                            doc.text(this.desserts[i].endereco.substr(0, 30), 287, l + 3);
+                            doc.text(this.desserts[i].bairro.substr(0, 14), 436, l + 3);
+                            doc.text(this.desserts[i].cidade, 511, l + 3);
+
+                            this.soma = 0
+                            this.soma_prod = 0
+                            //Adiciona os produtos do pedido no relatório
+                            listar_prod = await axios.get(this.url + '/api/produtos_pedidos/produtos/pedido?fk_pedido=' + this.desserts[i].id + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                            if (listar_prod.data.length != 0) {
+                                this.produtos = []
+                                this.soma = 0
+
+                                l = l + 22
+                                doc.text('Serviço', 30, l)
+                                doc.text('Valor', 370, l)
+
+                                for (var x = 0; x < listar_prod.data.length; x++) {
+                                    l = l + 15
+                                    this.soma = parseFloat(this.soma) + parseFloat(listar_prod.data[x].valor_total),
+
+                                        doc.text(listar_prod.data[x].cod_prod.toString() + '   ' + listar_prod.data[x].nome.toString().substr(0, 38), 30, l)
+                                    doc.text(listar_prod.data[x].valor_unitario.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }), 370, l)
+
+                                    cont = cont + 1
+                                    if (cont > qtd_reg) {
+                                        qtd_reg = 25
+                                        page = page + 1
+                                        doc.addPage();
+                                        doc.setPage(page)
+                                        l = 10
+                                        cont = 0
+                                    }
+
+                                }
+                                this.soma_prod = this.soma.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+
+                            }
+                            l = l + 20
+                            doc.setFontSize(10);
+                            doc.text('TOTAL: ' + this.soma_prod.toString(), 315, l);
+
+                            l = l + 12
+                            cont = cont + 1
+                            if (cont > qtd_reg) {
+                                qtd_reg = 25
+                                page = page + 1
+                                doc.addPage();
+                                doc.setPage(page)
+                                l = 10
+                                cont = 0
+                            }
+
+                        }
+
+                        //doc.addImage(imgData, 'JPEG', 15, 40, 20, 20);
+                        doc.save('Agenda.pdf')
+                    }
+
+                },
+            })
+
+        function formatarMoeda() {
+            if (document.getElementById('valor') != null) {
+                var elemento = document.getElementById('valor');
+            } else {
+                var elemento = document.getElementById('valor_leitor');
+            }
+
+
+            var valor = elemento.value;
+
+
+            valor = valor + '';
+            valor = parseInt(valor.replace(/[\D]+/g, ''));
+            valor = valor + '';
+            valor = valor.replace(/([0-9]{2})$/g, ",$1");
+
+            if (valor.length > 6) {
+                valor = valor.replace(/([0-9]{3}),([0-9]{2}$)/g, ".$1,$2");
+            }
+
+            app.__vue__.editedItem_prod.valor_unitario = valor;
+
+            if (valor == 'NaN') app.__vue__.editedItem_prod.valor_unitario = '';
+
+            if (valor == 'NaN') app.__vue__.editedItem_prod.valor_unitario = '';
+
+        }
+    </script>
+
+
+</body>
+</html>

@@ -1,0 +1,698 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" type="imagem/png" href="https://i.ibb.co/Cwbt6V2/LOGO-2.png" />
+    <meta charset="utf-8" />
+    <title>Softenter</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
+    <style>
+        #app {
+            background-color: lightblue;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/v-mask/dist/v-mask.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.4.1/jspdf.debug.js" integrity="sha384-THVO/sM0mFD9h7dfSndI6TS0PgAGavwKvB5hAxRRvc0o9cPLohB0wb/PTA7LdUHs" crossorigin="anonymous"></script>
+    <script src="globals.js"></script>
+
+    <div id="app">
+        <v-app id="inspire">
+
+            <div>
+                <v-app-bar color="#5C6BC0"
+                           dark>
+                    <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
+
+
+                    <v-toolbar-title>
+                        <h4>{{nome_empresa}}</h4>
+                    </v-toolbar-title>
+
+                    <v-spacer></v-spacer>
+
+                    <h5>usuário: {{funcionario.toUpperCase()}}</h5>
+                </v-app-bar>
+            </div>
+            <v-navigation-drawer v-model="drawer"
+                                 absolute
+                                 dark
+                                 color="indigo"
+                                 temporary>
+                <v-list nav
+                        dense>
+                    <v-list-item-group v-model="group"
+                                       active-class="deep-purple--text text--accent-4">
+                        <v-list-item onclick="window.location.href ='https://softenter.com.br/vendas.html'">
+                            <v-list-item-icon>
+                                <v-icon>mdi-cash-register</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title>Vendas</v-list-item-title>
+
+                        </v-list-item>
+
+                        <v-list-item onclick="window.location.href ='https://softenter.com.br/produtos.html'">
+                            <v-list-item-icon>
+                                <v-icon>mdi-package-variant-closed</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title>Produtos</v-list-item-title>
+                        </v-list-item>
+
+                        <v-list-item :disabled="disabled_sem_perm" onclick="window.location.href ='https://softenter.com.br/financeiro.html'">
+                            <v-list-item-icon>
+                                <v-icon>mdi-currency-usd</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title>Financeiro</v-list-item-title>
+                        </v-list-item>
+
+                        <v-list-item onclick="window.location.href ='https://softenter.com.br/clientes.html'">
+                            <v-list-item-icon>
+                                <v-icon>mdi-account-multiple</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title>Clientes</v-list-item-title>
+                        </v-list-item>
+
+                        <v-list-item :disabled="disabled_sem_perm" onclick="window.location.href ='https://softenter.com.br/funcionarios.html'">
+                            <v-list-item-icon>
+                                <v-icon>mdi-account-group</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title>Funcionários</v-list-item-title>
+                        </v-list-item>
+
+                        <v-list-item :disabled="disabled_sem_perm" onclick="window.location.href ='https://softenter.com.br/configuracoes.html'">
+                            <v-list-item-icon>
+                                <v-icon>mdi-cogs</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title>Configurações</v-list-item-title>
+                        </v-list-item>
+                    </v-list-item-group>
+                </v-list>
+                <br><br><br><br><br><br><br><br><br><br>
+
+                <v-img onclick="window.location.href ='https://api.whatsapp.com/send?phone=+5516994153485&text=%0A'"
+                       height="95"
+                       max-width="190"
+                       src="https://i.ibb.co/nmQtpJJ/celular3.png">
+                </v-img>
+
+            </v-navigation-drawer>
+
+            <v-card color="grey lighten-3"
+                    flat
+                    min-height="800px"
+                    tile>
+
+                <v-snackbar timeout="2000"
+                            centered
+                            elevation="24"
+                            vertical
+                            v-model="snackbar"
+                            :color="cor_aviso">
+                    <v-icon left>mdi-check-circle</v-icon>
+                    {{ text_aviso }}
+                </v-snackbar>
+
+                <br>
+                <v-row>
+                    <v-col cols="1" sm="0">
+                    </v-col>
+                    <v-col cols="12" sm="10">
+
+                        <v-card color="red">
+                            <v-data-table :headers="headers"
+                                          :items="desserts"
+                                          sort-by="calories"
+                                          class="elevation-1"
+                                          mobile-breakpoint="0"
+                                          :footer-props="{'items-per-page-text':'Linhas por página'}">
+                                <template v-slot:top>
+                                    <v-toolbar class="mb-2"
+                                               color="white"
+                                               flat>
+                                        <v-toolbar-title class="indigo--text text--darken-1"><v-icon color="#3949AB" left>mdi-account-multiple</v-icon> Clientes</v-toolbar-title>
+
+                                        <v-divider class="mx-4"
+                                                   inset
+                                                   vertical></v-divider>
+                                        <v-spacer></v-spacer>
+
+                                        <v-dialog v-model="dialog"
+                                                  persistent
+                                                  max-width="600px">
+                                            <template v-slot:activator="{ on, attrs }">
+
+                                                <v-btn icon fab color="#3949AB" dark class="mb-2" v-bind="attrs" v-on="on" x-large>
+
+                                                    <v-icon x-large>mdi-plus-circle</v-icon>
+                                                </v-btn>
+
+                                                <v-divider class="mx-4" inset vertical></v-divider>
+                                                <v-dialog v-model="dialog_pesq"
+                                                          width="500">
+                                                    <template v-slot:activator="{ on, attrs_dialog_pesq }">
+                                                        <v-btn icon
+                                                               fab
+                                                               color="#3949AB"
+                                                               v-bind="attrs_dialog_pesq"
+                                                               v-on="on">
+                                                            <v-icon>mdi-magnify</v-icon>
+                                                        </v-btn>
+                                                    </template>
+
+                                                    <v-card>
+                                                        <v-card-title class="headline white--text indigo lighten-2">
+                                                            Pesquisar
+                                                        </v-card-title>
+
+                                                        <v-card-text>
+                                                            <br>
+                                                            <v-row dense>
+                                                                <v-col cols="6" sm="6">
+                                                                    <v-text-field v-model="id_pesq" label="Código" outlined></v-text-field>
+                                                                </v-col>
+                                                                <v-col cols="6" sm="6">
+                                                                    <v-text-field v-model="cpf_cnpj_pesq" label="CPF/CNPJ" outlined></v-text-field>
+
+                                                                </v-col>
+                                                            </v-row>
+                                                            <v-row dense>
+                                                                <v-col cols="12" sm="12">
+                                                                    <v-text-field v-model="nome_pesq" label="Nome" outlined></v-text-field>
+
+                                                                </v-col>
+                                                            </v-row>
+                                                        </v-card-text>
+
+                                                        <v-divider></v-divider>
+
+                                                        <v-card-actions>
+                                                            <v-spacer></v-spacer>
+                                                            <v-btn color="primary"
+                                                                   text
+                                                                   @click="pesquisar()">
+                                                                <v-icon left>mdi-magnify</v-icon>
+                                                                Pesquisar
+                                                            </v-btn>
+                                                        </v-card-actions>
+                                                    </v-card>
+                                                </v-dialog>
+
+                                                <v-btn icon
+                                                       color="#3949AB"
+                                                       @click="imprimir()">
+                                                    <v-icon>mdi-printer</v-icon>
+                                                </v-btn>
+
+                                            </template>
+
+                                            <v-card>
+                                                <v-card-title>
+                                                    <span class="headline">{{ formTitle }}</span>
+                                                </v-card-title>
+
+                                                <v-card-text>
+                                                    <v-row dense>
+                                                        <v-col cols="3" sm="3">
+                                                            <v-text-field readonly v-model="editedItem.id" label="Código" outlined></v-text-field>
+
+                                                        </v-col>
+                                                        <v-col cols="9" sm="9">
+                                                            <v-text-field v-model="editedItem.nome" label="Nome" outlined></v-text-field>
+
+                                                        </v-col>
+                                                    </v-row>
+                                                    <v-row dense>
+                                                        <v-col cols="4" sm="4">
+                                                            <v-text-field v-model="editedItem.cpf_cnpj" label="CPF/CNPJ" outlined></v-text-field>
+
+                                                        </v-col>
+                                                        <v-col cols="4" sm="4">
+                                                            <v-menu v-model="menudata"
+                                                                    :close-on-content-click="false"
+                                                                    transition="scale-transition"
+                                                                    offset-y
+                                                                    max-width="290px"
+                                                                    min-width="auto">
+                                                                <template v-slot:activator="{ on, attrs }">
+                                                                    <v-text-field v-model="editedItem.data"
+                                                                                  label="Nascimento"
+                                                                                  outlined
+                                                                                  readonly
+                                                                                  v-bind="attrs"
+                                                                                  v-on="on"></v-text-field>
+
+                                                                </template>
+                                                                <v-date-picker v-model="date"
+                                                                               no-title
+                                                                               locale="pt-br"
+                                                                               @input="menudata = false"></v-date-picker>
+                                                            </v-menu>
+                                                        </v-col>
+                                                        <v-col cols="4" sm="4">
+                                                            <v-text-field v-model="editedItem.celular" v-mask="'(##)#####-####'" label="Celular" outlined></v-text-field>
+
+                                                        </v-col>
+                                                    </v-row>
+                                                    <v-row dense>
+                                                        <v-col cols="12" sm="12">
+                                                            <v-text-field v-model="editedItem.endereco" label="Endereço" outlined></v-text-field>
+                                                        </v-col>
+
+                                                    </v-row>
+
+                                                    <v-dialog persistent width="200" v-model="carregando">
+                                                        <v-card color="primary"
+                                                                dark>
+                                                            <v-card-text>
+                                                                Carregando... Aguarde !
+                                                                <v-progress-linear indeterminate
+                                                                                   color="white"
+                                                                                   class="mb-0">
+                                                                </v-progress-linear>
+                                                            </v-card-text>
+                                                        </v-card>
+                                                    </v-dialog>
+
+                                                    <v-row dense>
+                                                        <v-col cols="6" sm="6">
+                                                            <v-text-field v-model="editedItem.bairro" label="Bairro" outlined></v-text-field>
+                                                        </v-col>
+
+                                                        <v-col cols="6" sm="6">
+                                                            <v-text-field v-model="editedItem.cidade" label="Cidade" outlined></v-text-field>
+                                                        </v-col>
+                                                    </v-row>
+
+                                                    <v-row dense>
+                                                        <v-col cols="12" sm="12">
+                                                            <v-textarea v-model="editedItem.descricao" label="Descrição" outlined></v-textarea>
+                                                        </v-col>
+                                                    </v-row>
+
+                                                </v-card-text>
+
+                                                <v-divider></v-divider>
+
+                                                <v-card-actions>
+                                                    <v-spacer></v-spacer>
+                                                    <v-btn color="#E57373"
+                                                           text
+                                                           @click="close">
+                                                        <v-icon left>
+                                                            mdi-close-octagon
+                                                        </v-icon>
+                                                        Cancelar
+                                                    </v-btn>
+                                                    <v-btn color="success"
+                                                           text
+                                                           @click="save()">
+                                                        <v-icon left>
+                                                            mdi-content-save-outline
+                                                        </v-icon>
+                                                        Salvar
+                                                    </v-btn>
+                                                </v-card-actions>
+                                            </v-card>
+                                        </v-dialog>
+                                    </v-toolbar>
+                                </template>
+                                <template v-slot:item.actions="{ item }">
+                                    <v-icon small
+                                            class="mr-2"
+                                            @click="editItem(item)">
+                                        mdi-pencil
+                                    </v-icon>
+                                    <v-icon small
+                                            color="red"
+                                            @click="deleteItem(item)">
+                                        mdi-close
+                                    </v-icon>
+                                </template>
+                                <template v-slot:no-data>
+                                    <v-alert :value="true">
+                                        Sem resultados a exibir
+                                    </v-alert>
+                                </template>
+
+                            </v-data-table>
+                        </v-card>
+                    </v-col>
+                    <v-col cols="1" sm="0">
+                    </v-col>
+                </v-row>
+            </v-card>
+        </v-app>
+    </div>
+
+    <script>
+        Vue.use(VueMask.VueMaskPlugin);
+        new Vue({
+            el: '#app',
+            vuetify: new Vuetify(),
+            data: vm => ({
+                url: 'https://softenter.com.br',
+                id: '',
+                snackbar: false,
+                text_aviso: '',
+                cor_aviso: "success",
+                id_pesq: '',
+                nome_pesq: '',
+                cpf_cnpj: '',
+                cpf_cnpj_pesq: '',
+                nome_empresa: '',
+
+                show1: false,
+                usuario: '',
+                password: '',
+                dialog_login: true,
+
+                date: new Date().toLocaleDateString().substr(6, 4) + '-' + new Date().toLocaleDateString().substr(3, 2) + '-' + new Date().toLocaleDateString().substr(0, 2),
+                dateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
+                menudata: false,
+                bairro: '',
+                dialog_pesq: false,
+                data: vm.formatDate(new Date().toISOString().substr(0, 10)),
+                carregando: false,
+                dialog: false,
+                drawer: false,
+                group: null,
+                headers: [
+                    { text: 'Código', value: 'id' },
+                    { text: 'Nome', value: 'nome' },
+                    { text: 'CPF/CNPJ', value: 'cpf_cnpj' },
+                    { text: 'Nascimento', value: 'data' },
+                    { text: 'Celular', value: 'celular' },
+                    { text: 'Endereço', value: 'endereco' },
+                    { text: 'Bairro', value: 'bairro' },
+                    { text: 'Cidade', value: 'cidade' },
+                    { text: 'Editar/deletar', align: 'center', value: 'actions', sortable: false },
+
+                ],
+
+                desserts: [],
+                editedIndex: -1,
+                editedItem: {
+                    id: '',
+                    data: new Date().toLocaleDateString(),
+                    nome: '',
+                    cpf_cnpj: '',
+                    celular: '',
+                    bairro: '',
+                    cidade: '',
+                    descricao: '',
+                    endereco: '',
+                },
+                defaultItem: {
+                    id: '',
+                    data: new Date().toLocaleDateString(),
+                    nome: '',
+                    cpf_cnpj: '',
+                    celular: '',
+                    cidade: '',
+                    bairro: '',
+                    descricao: '',
+                    endereco: '',
+                },
+            }),
+
+            computed: {
+
+                formTitle() {
+                    return this.editedIndex === -1 ? 'Novo' : 'Editar'
+                }
+            },
+
+            watch: {
+                date(val) {
+                    this.editedItem.data = this.formatDate(this.date)
+                },
+                dialog(val) {
+                    this.produtos = []
+                    val || this.close()
+                },
+                dialogDelete(val) {
+                    val || this.closeDelete()
+                },
+            },
+
+            created() {
+                this.initialize()
+
+                this.info_empresa()
+
+                if (sessionStorage.login_ativo != 'true') {
+                    window.location.href = this.url + "/login.html";
+                }
+
+                if (sessionStorage.usuadm == '0') {
+                    this.disabled_sem_perm = true
+                }
+
+            },
+
+            methods: {
+
+
+                info_empresa() {
+                    this.nome_empresa = sessionStorage.nome_empresa
+                    this.funcionario = sessionStorage.usuario_nome
+                },
+
+                formatDate(date) {
+                    if (!date) return null
+
+                    const [year, month, day] = date.split('-')
+                    return `${day}/${month}/${year}`
+                },
+
+                async initialize() {
+
+                    listar = await axios.get(this.url + '/api/clientes/listar/clientes?Fk_empresa=' + sessionStorage.id_empresalogado)
+
+                    for (var i = 0; i < listar.data.length; i++) {
+
+                        data = listar.data[i].data_Nascimento,
+
+                            this.desserts.push(
+                                {
+                                    id: listar.data[i].id,
+                                    data: data,
+                                    nome: listar.data[i].nome,
+                                    cpf_cnpj: listar.data[i].cpf_cnpj,
+                                    celular: listar.data[i].celular,
+                                    bairro: listar.data[i].bairro,
+                                    cidade: listar.data[i].cidade,
+                                    descricao: listar.data[i].descricao.replaceAll("\\n", "\n"),
+                                    endereco: listar.data[i].endereco,
+                                }
+                            )
+                    }
+                },
+
+                async editItem(item) {
+
+                    this.editedIndex = this.desserts.indexOf(item)
+                    this.editedItem = Object.assign({}, item)
+                    this.dialog = true
+
+                    this.date = String(this.editedItem.data).substr(6, 4) + '-' + String(this.editedItem.data).substr(3, 2) + '-' + String(this.editedItem.data).substr(0, 2)
+
+                    id = this.desserts[this.desserts.indexOf(item)].id
+
+                },
+
+                deleteItem(item) {
+                    const index = this.desserts.indexOf(item)
+                    id = this.desserts[index].id
+                    mensagem = confirm('Deseja deletar o registro?') && this.desserts.splice(index, 1)
+
+
+                    if (mensagem != false) {
+                        axios.delete(this.url + '/api/clientes/clientes/deletar?Id=' + id + '&fk_empresa=' + sessionStorage.id_empresalogado)
+                        this.snackbar = true
+                        this.text_aviso = 'Excluído com sucesso !'
+                        this.cor_aviso = "success"
+                    }
+                },
+
+                /*    deleteItemConfirm() {
+                        this.produtos.splice(this.editedIndex_prod, 1)
+                        this.closeDelete_prod()
+                    }, */
+
+                close() {
+                    this.dialog = false
+                    this.$nextTick(() => {
+                        this.editedItem = Object.assign({}, this.defaultItem)
+                        this.editedIndex = -1
+                    })
+                },
+
+                /*  closeDelete() {
+                      this.dialogDelete_prod = false
+                      this.$nextTick(() => {
+                          this.editedItem_prod = Object.assign({}, this.defaultItem_prod)
+                          this.editedIndex_prod = -1
+                      })
+                  }, */
+
+                async save(item) {
+
+                    try {
+                        this.carregando = true
+
+                        if (this.editedIndex > -1) {
+                            Object.assign(this.desserts[this.editedIndex], this.editedItem)
+
+                            data = this.desserts[this.editedIndex].data
+
+                            dia = data.slice(0, 2);
+                            mes = data.slice(3, 5);
+                            ano = data.slice(6, 10);
+
+                            data = mes + "/" + dia + "/" + ano
+
+                            id = this.desserts[this.editedIndex].id,
+                                data = data,
+                                nome = this.desserts[this.editedIndex].nome
+                            cpf_cnpj = this.desserts[this.editedIndex].cpf_cnpj,
+                                celular = this.desserts[this.editedIndex].celular
+                            bairro = this.desserts[this.editedIndex].bairro
+                            cidade = this.desserts[this.editedIndex].cidade
+                            descricao = this.desserts[this.editedIndex].descricao.replaceAll("\n", "\\n")
+                            endereco = this.desserts[this.editedIndex].endereco
+
+
+                            salvar_resq = await axios.post(this.url + '/api/clientes/clientes/alterar?Id=' + id + '&Nome=' + nome + '&Data_Nascimento=' + data + '&Cpf_cnpj=' + cpf_cnpj + '&Celular=' + celular + '&Endereco=' + endereco + '&Bairro=' + bairro + '&Cidade=' + cidade + '&Descricao=' + descricao + '&fk_empresa=' + sessionStorage.id_empresalogado)
+
+                        }
+                        else {
+                            this.desserts.push(this.editedItem)
+
+                            data = this.desserts[this.desserts.length - 1].data
+                            dia = data.slice(0, 2);
+                            mes = data.slice(3, 5);
+                            ano = data.slice(6, 10);
+                            data = mes + "/" + dia + "/" + ano
+
+                            bairro = this.desserts[this.desserts.length - 1].bairro
+
+                            id = this.desserts[this.desserts.length - 1].id,
+                                data = data,
+                                nome = this.desserts[this.desserts.length - 1].nome
+                            cpf_cnpj = this.desserts[this.desserts.length - 1].cpf_cnpj,
+                                celular = this.desserts[this.desserts.length - 1].celular
+                            bairro = this.desserts[this.desserts.length - 1].bairro
+                            cidade = this.desserts[this.desserts.length - 1].cidade
+                            descricao = this.desserts[this.desserts.length - 1].descricao.replaceAll("\n", "\\n")
+                            endereco = this.desserts[this.desserts.length - 1].endereco
+
+                            salvar_resq = await axios.post(this.url + '/api/clientes/clientes/salvar?Nome=' + nome + '&Data_Nascimento=' + data + '&Cpf_cnpj=' + cpf_cnpj + '&Celular=' + celular + '&Endereco=' + endereco + '&Bairro=' + bairro + '&Cidade=' + cidade + '&Descricao=' + descricao + '&Fk_empresa=' + sessionStorage.id_empresalogado)
+
+                        }
+
+                        this.snackbar = true
+                        this.text_aviso = 'Salvo com sucesso !'
+                        this.cor_aviso = "success"
+
+                        this.close()
+
+                    }
+                    catch (err) {
+                        alert("Erro: " + err.message);
+                        this.close()
+                    }
+                },
+
+
+                async pesquisar() {
+
+                    listar = await axios.get(this.url + '/api/clientes/listar/clientes_pesq?Id=' + this.id_pesq + '&Nome=' + this.nome_pesq + '&Cpf_cnpj=' + this.cpf_cnpj_pesq + '&Fk_empresa=' + sessionStorage.id_empresalogado)
+                    this.desserts = []
+                    for (var i = 0; i < listar.data.length; i++) {
+
+                        data = listar.data[i].data_Nascimento,
+
+                            this.desserts.push(
+                                {
+                                    id: listar.data[i].id,
+                                    data: data,
+                                    nome: listar.data[i].nome,
+                                    cpf_cnpj: listar.data[i].cpf_cnpj,
+                                    celular: listar.data[i].celular,
+                                    bairro: listar.data[i].bairro,
+                                    cidade: listar.data[i].cidade,
+                                    descricao: listar.data[i].descricao.replaceAll("\\n", "\n"),
+                                    endereco: listar.data[i].endereco,
+                                }
+                            )
+                    }
+
+                    this.dialog_pesq = false
+                },
+
+
+
+                imprimir() {
+
+                    var doc = new jsPDF('landscape', 'pt', 'a4');
+                    doc.setFontSize(13);
+                    doc.text('Clientes', 3, 22);
+                    doc.text('____________________________________________________________________________________________________________________________________________________________________________', 0, 35);
+                    doc.setFontSize(10);
+                    doc.text('Código', 3, 51);
+                    doc.text('Nome', 45, 51);
+                    doc.text('CPF/CNPJ', 165, 51);
+                    doc.text('Nascimento', 237, 51);
+                    doc.text('Celular', 305, 51);
+                    doc.text('Endereço', 365, 51);
+                    doc.text('Bairro', 525, 51);
+                    doc.text('Cidade', 660, 51);
+                    doc.text('______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________', 0, 58);
+                    l = 65
+                    cont = 0
+                    page = 1
+                    qtd_reg = 42
+                    doc.setFontSize(8);
+                    for (var i = 0; i < this.desserts.length; i++) {
+                        doc.text('______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________', 0, l - 7);
+                        doc.text(this.desserts[i].id.substr(0, 13), 3, l + 3);
+                        doc.text(this.desserts[i].nome.substr(0, 25), 45, l + 3);
+                        doc.text(this.desserts[i].cpf_cnpj.substr(0, 25), 165, l + 3);
+                        doc.text(this.desserts[i].data.substr(0, 13), 243, l + 3);
+                        doc.text(this.desserts[i].celular.substr(0, 15), 305, l + 3);
+                        doc.text(this.desserts[i].endereco.substr(0, 32), 365, l + 3);
+                        doc.text(this.desserts[i].bairro.substr(0, 23), 525, l + 3);
+                        doc.text(this.desserts[i].cidade.substr(0, 60), 660, l + 3);
+
+                        l = l + 12
+                        cont = cont + 1
+                        if (cont > qtd_reg) {
+                            qtd_reg = 48
+                            page = page + 1
+                            doc.addPage();
+                            doc.setPage(page)
+                            l = 10
+                            cont = 0
+
+                        }
+                    }
+
+                    //doc.addImage(imgData, 'JPEG', 15, 40, 20, 20);
+                    doc.save('clientes.pdf')
+                }
+
+            },
+        })
+    </script>
+
+
+</body>
+</html>
